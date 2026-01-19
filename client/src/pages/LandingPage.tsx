@@ -45,17 +45,20 @@ export default function LandingPage() {
   const [, setLocation] = useLocation();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingPlan, setLoadingPlan] = useState<'pro' | 'pro_plus' | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [billingCycle, setBillingCycle] = useState<'yearly' | 'monthly'>('yearly');
 
-  const handleGetStarted = async (plan: 'pro' | 'pro_plus' = 'pro') => {
+  const handleGetStarted = async (plan: 'pro' | 'pro_plus' = 'pro', cycle: 'yearly' | 'monthly' = 'yearly') => {
+    const planKey = `${plan}_${cycle}`;
     setIsLoading(true);
-    setLoadingPlan(plan);
+    setLoadingPlan(planKey);
     try {
       const { data, error } = await supabase.functions.invoke('stripe-create-checkout', {
         body: {
-          successUrl: window.location.origin + `/signup?payment=success&plan=${plan}`,
+          successUrl: window.location.origin + `/signup?payment=success&plan=${plan}&cycle=${cycle}`,
           cancelUrl: window.location.origin + '/',
           plan: plan,
+          cycle: cycle,
         },
       });
 
@@ -184,6 +187,33 @@ export default function LandingPage() {
             </div>
           </div>
 
+          {/* Billing Toggle */}
+          <div className="flex justify-center mb-8">
+            <div className="bg-white rounded-full p-1 shadow-lg border border-slate-200 inline-flex">
+              <button
+                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                  billingCycle === 'yearly'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                onClick={() => setBillingCycle('yearly')}
+              >
+                Yearly
+                <span className="ml-2 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">Save up to $800</span>
+              </button>
+              <button
+                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                  billingCycle === 'monthly'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                onClick={() => setBillingCycle('monthly')}
+              >
+                Monthly
+              </button>
+            </div>
+          </div>
+
           {/* Two Pricing Cards Side by Side in Hero */}
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* Pro Plan Card */}
@@ -197,14 +227,39 @@ export default function LandingPage() {
                 
                 <h3 className="text-2xl font-bold text-slate-900 mb-2">Pro</h3>
                 
-                <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-5xl font-bold text-slate-900">$99</span>
-                  <span className="text-slate-500 text-xl">/year</span>
-                </div>
-                
-                <p className="text-blue-600 font-medium mb-6">
-                  That's just $8.25/month
-                </p>
+                {billingCycle === 'yearly' ? (
+                  <>
+                    <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-5xl font-bold text-slate-900">$99</span>
+                      <span className="text-slate-500 text-xl">/first year</span>
+                    </div>
+                    <p className="text-slate-500 text-sm mb-2">
+                      Then $499/year
+                    </p>
+                    <div className="bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full inline-block mb-4">
+                      Save $400 first year!
+                    </div>
+                    <p className="text-blue-600 font-medium text-sm mb-1">
+                      That's just $8.25/month first year
+                    </p>
+                    <p className="text-slate-500 text-xs mb-6">
+                      For the first 1,000 users only
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-5xl font-bold text-slate-900">$39.99</span>
+                      <span className="text-slate-500 text-xl">/month</span>
+                    </div>
+                    <p className="text-slate-500 text-sm mb-4">
+                      First 12 months, then $49.99/month
+                    </p>
+                    <p className="text-blue-600 font-medium text-sm mb-6">
+                      No long-term commitment
+                    </p>
+                  </>
+                )}
 
                 <div className="space-y-3 mb-6">
                   {proFeatures.map((feature, i) => (
@@ -220,12 +275,16 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg shadow-blue-500/25 transition-all hover:scale-[1.02]"
-                  onClick={() => handleGetStarted('pro')}
+                  onClick={() => handleGetStarted('pro', billingCycle)}
                   disabled={isLoading}
                 >
-                  {loadingPlan === 'pro' ? 'Processing...' : 'Get Pro'}
-                  {loadingPlan !== 'pro' && <ArrowRight className="ml-2 w-5 h-5" />}
+                  {loadingPlan === `pro_${billingCycle}` ? 'Processing...' : 'Get Pro'}
+                  {loadingPlan !== `pro_${billingCycle}` && <ArrowRight className="ml-2 w-5 h-5" />}
                 </Button>
+                
+                <p className="text-slate-500 text-xs mt-3 text-center">
+                  30-day money-back guarantee
+                </p>
               </div>
             </div>
 
@@ -244,14 +303,39 @@ export default function LandingPage() {
                 
                 <h3 className="text-2xl font-bold text-white mb-2">Pro+</h3>
                 
-                <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-5xl font-bold text-white">$499</span>
-                  <span className="text-slate-400 text-xl">/year</span>
-                </div>
-                
-                <p className="text-orange-400 font-medium mb-6">
-                  That's just $41.58/month
-                </p>
+                {billingCycle === 'yearly' ? (
+                  <>
+                    <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-5xl font-bold text-white">$499</span>
+                      <span className="text-slate-400 text-xl">/first year</span>
+                    </div>
+                    <p className="text-slate-400 text-sm mb-2">
+                      Then $1,299/year
+                    </p>
+                    <div className="bg-orange-500/20 text-orange-400 text-sm font-medium px-3 py-1 rounded-full inline-block mb-4">
+                      Save $800 first year!
+                    </div>
+                    <p className="text-orange-400 font-medium text-sm mb-1">
+                      That's just $41.58/month first year
+                    </p>
+                    <p className="text-slate-500 text-xs mb-6">
+                      Promotional pricing - limited time
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-5xl font-bold text-white">$59.99</span>
+                      <span className="text-slate-400 text-xl">/month</span>
+                    </div>
+                    <p className="text-slate-400 text-sm mb-4">
+                      First 12 months, then $109.99/month
+                    </p>
+                    <p className="text-orange-400 font-medium text-sm mb-6">
+                      No long-term commitment
+                    </p>
+                  </>
+                )}
 
                 <div className="space-y-3 mb-6">
                   {proPlusFeatures.map((feature, i) => (
@@ -267,15 +351,26 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25 transition-all hover:scale-[1.02]"
-                  onClick={() => handleGetStarted('pro_plus')}
+                  onClick={() => handleGetStarted('pro_plus', billingCycle)}
                   disabled={isLoading}
                 >
-                  {loadingPlan === 'pro_plus' ? 'Processing...' : 'Get Pro+'}
-                  {loadingPlan !== 'pro_plus' && <ArrowRight className="ml-2 w-5 h-5" />}
+                  {loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : 'Get Pro+'}
+                  {loadingPlan !== `pro_plus_${billingCycle}` && <ArrowRight className="ml-2 w-5 h-5" />}
                 </Button>
+                
+                <p className="text-slate-500 text-xs mt-3 text-center">
+                  30-day money-back guarantee
+                </p>
               </div>
             </div>
           </div>
+          
+          {/* Yearly Promo Note */}
+          {billingCycle === 'yearly' && (
+            <p className="text-center text-slate-600 text-sm mt-6">
+              <span className="font-semibold text-green-600">Promotional pricing</span> available for yearly plans only. Lock in your rate today!
+            </p>
+          )}
         </div>
       </section>
 
@@ -547,9 +642,36 @@ export default function LandingPage() {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
             Choose Your Plan
           </h2>
-          <p className="text-slate-600 text-lg mb-12">
+          <p className="text-slate-600 text-lg mb-8">
             Join thousands of contractors who made the switch.
           </p>
+
+          {/* Billing Toggle */}
+          <div className="flex justify-center mb-10">
+            <div className="bg-white rounded-full p-1 shadow-lg border border-slate-200 inline-flex">
+              <button
+                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                  billingCycle === 'yearly'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                onClick={() => setBillingCycle('yearly')}
+              >
+                Yearly
+                <span className="ml-2 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">Save up to $800</span>
+              </button>
+              <button
+                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                  billingCycle === 'monthly'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                onClick={() => setBillingCycle('monthly')}
+              >
+                Monthly
+              </button>
+            </div>
+          </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Pro Plan */}
@@ -560,14 +682,39 @@ export default function LandingPage() {
 
               <h3 className="text-2xl font-bold text-slate-900 mb-2">Pro</h3>
 
-              <div className="flex items-baseline justify-center gap-1 mb-2">
-                <span className="text-6xl font-bold text-slate-900">$99</span>
-                <span className="text-slate-500 text-2xl">/year</span>
-              </div>
-
-              <p className="text-blue-600 font-medium mb-8">
-                That's just $8.25/month
-              </p>
+              {billingCycle === 'yearly' ? (
+                <>
+                  <div className="flex items-baseline justify-center gap-1 mb-2">
+                    <span className="text-6xl font-bold text-slate-900">$99</span>
+                    <span className="text-slate-500 text-2xl">/first year</span>
+                  </div>
+                  <p className="text-slate-500 text-sm mb-2">
+                    Then $499/year
+                  </p>
+                  <div className="bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full inline-block mb-4">
+                    Save $400 first year!
+                  </div>
+                  <p className="text-blue-600 font-medium mb-2">
+                    That's just $8.25/month first year
+                  </p>
+                  <p className="text-slate-500 text-xs mb-8">
+                    For the first 1,000 users only
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-baseline justify-center gap-1 mb-2">
+                    <span className="text-6xl font-bold text-slate-900">$39.99</span>
+                    <span className="text-slate-500 text-2xl">/month</span>
+                  </div>
+                  <p className="text-slate-500 text-sm mb-4">
+                    First 12 months, then $49.99/month
+                  </p>
+                  <p className="text-blue-600 font-medium mb-8">
+                    No long-term commitment
+                  </p>
+                </>
+              )}
 
               <div className="space-y-3 text-left mb-8">
                 {proFeatures.map((feature, i) => (
@@ -583,11 +730,11 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-lg py-6 shadow-xl shadow-blue-500/30 transition-all hover:shadow-blue-500/40 hover:scale-[1.02]"
-                onClick={() => handleGetStarted('pro')}
+                onClick={() => handleGetStarted('pro', billingCycle)}
                 disabled={isLoading}
               >
-                {loadingPlan === 'pro' ? 'Processing...' : 'Get Started with Pro'}
-                {loadingPlan !== 'pro' && <ArrowRight className="ml-2 w-5 h-5" />}
+                {loadingPlan === `pro_${billingCycle}` ? 'Processing...' : 'Get Started with Pro'}
+                {loadingPlan !== `pro_${billingCycle}` && <ArrowRight className="ml-2 w-5 h-5" />}
               </Button>
 
               <p className="text-slate-500 text-sm mt-4">
@@ -607,14 +754,39 @@ export default function LandingPage() {
 
                 <h3 className="text-2xl font-bold text-white mb-2">Pro+</h3>
 
-                <div className="flex items-baseline justify-center gap-1 mb-2">
-                  <span className="text-6xl font-bold text-white">$499</span>
-                  <span className="text-slate-400 text-2xl">/year</span>
-                </div>
-
-                <p className="text-orange-400 font-medium mb-8">
-                  That's just $41.58/month
-                </p>
+                {billingCycle === 'yearly' ? (
+                  <>
+                    <div className="flex items-baseline justify-center gap-1 mb-2">
+                      <span className="text-6xl font-bold text-white">$499</span>
+                      <span className="text-slate-400 text-2xl">/first year</span>
+                    </div>
+                    <p className="text-slate-400 text-sm mb-2">
+                      Then $1,299/year
+                    </p>
+                    <div className="bg-orange-500/20 text-orange-400 text-sm font-medium px-3 py-1 rounded-full inline-block mb-4">
+                      Save $800 first year!
+                    </div>
+                    <p className="text-orange-400 font-medium mb-2">
+                      That's just $41.58/month first year
+                    </p>
+                    <p className="text-slate-500 text-xs mb-8">
+                      Promotional pricing - limited time
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-baseline justify-center gap-1 mb-2">
+                      <span className="text-6xl font-bold text-white">$59.99</span>
+                      <span className="text-slate-400 text-2xl">/month</span>
+                    </div>
+                    <p className="text-slate-400 text-sm mb-4">
+                      First 12 months, then $109.99/month
+                    </p>
+                    <p className="text-orange-400 font-medium mb-8">
+                      No long-term commitment
+                    </p>
+                  </>
+                )}
 
                 <div className="space-y-3 text-left mb-8">
                   {proPlusFeatures.map((feature, i) => (
@@ -630,11 +802,11 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-lg py-6 shadow-xl shadow-orange-500/30 transition-all hover:shadow-orange-500/40 hover:scale-[1.02]"
-                  onClick={() => handleGetStarted('pro_plus')}
+                  onClick={() => handleGetStarted('pro_plus', billingCycle)}
                   disabled={isLoading}
                 >
-                  {loadingPlan === 'pro_plus' ? 'Processing...' : 'Get Started with Pro+'}
-                  {loadingPlan !== 'pro_plus' && <ArrowRight className="ml-2 w-5 h-5" />}
+                  {loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : 'Get Started with Pro+'}
+                  {loadingPlan !== `pro_plus_${billingCycle}` && <ArrowRight className="ml-2 w-5 h-5" />}
                 </Button>
 
                 <p className="text-slate-400 text-sm mt-4">
@@ -643,6 +815,13 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+
+          {/* Yearly Promo Note */}
+          {billingCycle === 'yearly' && (
+            <p className="text-center text-slate-600 text-sm mt-6">
+              <span className="font-semibold text-green-600">Promotional pricing</span> available for yearly plans only. Lock in your rate today!
+            </p>
+          )}
 
           {/* Pro+ Features Highlight */}
           <div className="mt-12 bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-8 text-left">
