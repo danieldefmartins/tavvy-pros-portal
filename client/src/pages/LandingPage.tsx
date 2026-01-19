@@ -110,7 +110,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <img 
               src="/tavvy-logo.png" 
-              alt="TavvY" 
+              alt="Tavvy" 
               className="h-9 w-auto"
             />
             <span className="text-orange-400 font-semibold text-lg">Pros</span>
@@ -158,7 +158,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              TavvY Pro was built by a contractor who got tired of the Big Tech
+              Tavvy Pro was built by a contractor who got tired of the Big Tech
               monopoly. We're on <strong className="text-slate-800">YOUR</strong> side. Fair leads, fair reviews, fair
               pricing.
             </p>
@@ -440,7 +440,7 @@ export default function LandingPage() {
         <div className="container mx-auto max-w-6xl">
           <div className="text-left mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
-              Traditional Platforms vs TavvY
+              Traditional Platforms vs Tavvy
             </h2>
             <p className="text-slate-600 text-lg max-w-2xl">
               See the difference when someone actually cares about contractors.
@@ -477,13 +477,13 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* TavvY Way */}
+            {/* Tavvy Way */}
             <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 shadow-lg text-white">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                   <Check className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="text-xl font-bold">The TavvY Way</h3>
+                <h3 className="text-xl font-bold">The Tavvy Way</h3>
               </div>
               
               <div className="space-y-4">
@@ -530,7 +530,7 @@ export default function LandingPage() {
               </p>
 
               <p className="text-blue-600 font-medium mb-6">
-                On TavvY, if a negative review isn't part of a pattern, it fades away after 6 months. 
+                On Tavvy, if a negative review isn't part of a pattern, it fades away after 6 months. 
                 Because we believe in second chances and fair representation.
               </p>
 
@@ -1036,7 +1036,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="bg-white/5 rounded-xl p-6 flex flex-col justify-center">
-                <h4 className="font-semibold text-green-400 mb-4 text-center">With TavvY Pro+:</h4>
+                <h4 className="font-semibold text-green-400 mb-4 text-center">With Tavvy Pro+:</h4>
                 <div className="text-center">
                   <div className="text-5xl font-bold text-white mb-2">$499</div>
                   <div className="text-slate-400 mb-4">per year — everything included</div>
@@ -1051,15 +1051,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Why TavvY vs Pay-Per-Lead Platforms */}
+      {/* Why Tavvy vs Pay-Per-Lead Platforms */}
       <section className="py-20 px-4 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
-              Why Contractors Are Switching to TavvY
+              Why Contractors Are Switching to Tavvy
             </h2>
             <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-              See how TavvY stacks up against pay-per-lead platforms like Thumbtack, Angi, HomeAdvisor, and others.
+              See how Tavvy stacks up against pay-per-lead platforms like Thumbtack, Angi, HomeAdvisor, and others.
             </p>
           </div>
 
@@ -1071,8 +1071,8 @@ export default function LandingPage() {
                   <th className="text-left p-4 bg-slate-50 rounded-tl-xl"></th>
                   <th className="p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold">
                     <div className="flex items-center justify-center gap-2">
-                      <img src="/tavvy-logo.png" alt="TavvY" className="h-6 w-auto brightness-0 invert" />
-                      <span>TavvY</span>
+                      <img src="/tavvy-logo.png" alt="Tavvy" className="h-6 w-auto brightness-0 invert" />
+                      <span>Tavvy</span>
                     </div>
                   </th>
                   <th className="p-4 bg-slate-100 text-slate-600 font-medium">Thumbtack</th>
@@ -1251,10 +1251,10 @@ export default function LandingPage() {
             <div className="bg-green-50 border border-green-200 rounded-2xl p-8">
               <h3 className="text-xl font-bold text-green-700 mb-4 flex items-center gap-2">
                 <Check className="w-6 h-6" />
-                The TavvY Math
+                The Tavvy Math
               </h3>
               <div className="space-y-3 text-slate-700">
-                <p>With TavvY Pro at <strong>$99/year</strong>:</p>
+                <p>With Tavvy Pro at <strong>$99/year</strong>:</p>
                 <ul className="space-y-2 ml-4">
                   <li className="flex items-start gap-2">
                     <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
@@ -1318,7 +1318,7 @@ export default function LandingPage() {
               },
               {
                 q: "What trades/services do you support?",
-                a: "We support all home service trades: plumbing, electrical, HVAC, roofing, landscaping, cleaning, painting, handyman services, and more. If you serve homeowners, you can join TavvY Pro.",
+                a: "We support all home service trades: plumbing, electrical, HVAC, roofing, landscaping, cleaning, painting, handyman services, and more. If you serve homeowners, you can join Tavvy Pro.",
               },
               {
                 q: "Can I cancel anytime?",
@@ -1390,13 +1390,13 @@ export default function LandingPage() {
             <div className="flex items-center gap-2">
               <img 
                 src="/tavvy-logo.png" 
-                alt="TavvY" 
+                alt="Tavvy" 
                 className="h-8 w-auto brightness-0 invert"
               />
               <span className="text-orange-400 font-semibold">Pros</span>
             </div>
             <p className="text-sm">
-              © {new Date().getFullYear()} TavvY. Built by contractors, for contractors.
+              © {new Date().getFullYear()} Tavvy. Built by contractors, for contractors.
             </p>
           </div>
         </div>

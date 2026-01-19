@@ -45,14 +45,14 @@ export default function Login() {
           <div className="mx-auto mb-4">
             <img 
               src="/tavvy-logo.png" 
-              alt="TavvY" 
+              alt="Tavvy" 
               className="h-16 w-auto mx-auto"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
             />
           </div>
-          <CardTitle className="text-2xl text-white">TavvY Pros</CardTitle>
+          <CardTitle className="text-2xl text-white">Tavvy Pros</CardTitle>
           <CardDescription className="text-slate-400">
             Sign in to access your Pro account
           </CardDescription>
@@ -96,7 +96,7 @@ export default function Login() {
             </Button>
           </form>
           <p className="mt-6 text-center text-xs text-slate-500">
-            Need an account? Contact TavvY support.
+            Need an account? Contact Tavvy support.
           </p>
         </CardContent>
       </Card>

@@ -42,7 +42,7 @@ export default function ProsDashboard() {
       <header className="bg-[#0f172a] text-white py-4 px-6">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logo-horizontal.png" alt="TavvY" className="h-8" />
+            <img src="/logo-horizontal.png" alt="Tavvy" className="h-8" />
             <span className="text-orange-500 font-semibold">Pros</span>
           </div>
           <div className="flex items-center gap-4">
@@ -58,7 +58,7 @@ export default function ProsDashboard() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Welcome back!</h1>
-          <p className="text-gray-600 mt-1">Here's what's happening with your TavvY Pro account.</p>
+          <p className="text-gray-600 mt-1">Here's what's happening with your Tavvy Pro account.</p>
         </div>
 
         {/* Profile Completion Alert */}

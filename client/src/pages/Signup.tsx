@@ -141,7 +141,7 @@ export default function Signup() {
                 Payment Successful!
               </div>
               <p className="text-green-600 text-sm">
-                Welcome to TavvY Pros {selectedPlan === 'pro_plus' ? 'Pro+' : 'Pro'}! Create your account to get started.
+                Welcome to Tavvy Pros {selectedPlan === 'pro_plus' ? 'Pro+' : 'Pro'}! Create your account to get started.
               </p>
             </div>
             
@@ -160,7 +160,7 @@ export default function Signup() {
             <div className="flex justify-center mb-4">
               <img 
                 src="/tavvy-logo.png" 
-                alt="TavvY" 
+                alt="Tavvy" 
                 className="h-12 w-auto"
               />
             </div>
@@ -274,7 +274,7 @@ export default function Signup() {
         <div className="text-center mb-10">
           <img 
             src="/tavvy-logo.png" 
-            alt="TavvY" 
+            alt="Tavvy" 
             className="h-12 w-auto mx-auto mb-4"
           />
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Choose Your Plan</h1>

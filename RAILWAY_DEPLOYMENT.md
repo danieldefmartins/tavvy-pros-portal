@@ -1,4 +1,4 @@
-# TavvY Pros Portal - Railway Deployment Guide
+# Tavvy Pros Portal - Railway Deployment Guide
 
 ## Prerequisites
 
@@ -114,4 +114,4 @@ Railway charges based on actual resource usage (CPU, RAM, bandwidth).
 
 - Railway Docs: https://docs.railway.app
 - Railway Discord: https://discord.gg/railway
-- TavvY Support: [Your support email]
+- Tavvy Support: [Your support email]
