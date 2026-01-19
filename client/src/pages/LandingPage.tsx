@@ -488,18 +488,18 @@ export default function LandingPage() {
               </div>
 
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Built By a Contractor,{" "}
+                Built By Contractors,{" "}
                 <span className="text-orange-400">For Contractors</span>
               </h2>
 
               <p className="text-slate-300 text-lg mb-6 leading-relaxed">
-                I spent 15 years in the trades. I know what it's like to pay hundreds every month for leads 
-                that go nowhere. I've watched Big Tech platforms extract every dollar from hardworking 
-                contractors while giving nothing back.
+                Our founding team spent over 15 years in the trades. We know what it's like to pay hundreds 
+                every month for leads that go nowhere. We've watched Big Tech platforms extract every dollar 
+                from hardworking contractors while giving nothing back.
               </p>
 
               <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                So I built something different. Something that puts contractors first. Not investors. 
+                So we built something different. Something that puts contractors first. Not investors. 
                 Not advertisers. <strong className="text-white">You.</strong>
               </p>
 
