@@ -29,6 +29,16 @@ import {
   Sparkles,
   CreditCard,
   Search,
+  MessageSquare,
+  Calendar,
+  BarChart3,
+  Mail,
+  Phone,
+  Bot,
+  FileText,
+  Globe,
+  Smartphone,
+  Receipt,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -667,6 +677,195 @@ export default function LandingPage() {
                 <p className="text-slate-400 text-sm">
                   Free Tavvy Pros Digital Business Cards to share with customers and grow your network.
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 360 For Business CRM Deep Dive */}
+      <section className="py-20 px-4 bg-gradient-to-b from-slate-900 to-slate-800">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-orange-500/20 border border-orange-500/30 rounded-full px-4 py-2 mb-6">
+              <Crown className="w-4 h-4 text-orange-400" />
+              <span className="text-orange-400 text-sm font-medium">Pro+ Exclusive</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              360 For Business CRM
+            </h2>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+              A complete business management platform that helps you capture leads, nurture relationships, 
+              and grow your business — all for a fraction of what you'd pay elsewhere.
+            </p>
+            <div className="mt-4 inline-flex items-center gap-2 bg-green-500/20 border border-green-500/30 rounded-full px-4 py-2">
+              <Check className="w-4 h-4 text-green-400" />
+              <span className="text-green-400 text-sm font-medium">$297/month value included FREE with Pro+</span>
+            </div>
+          </div>
+
+          {/* CRM Features Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {/* Lead Management */}
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-colors">
+              <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mb-4">
+                <Users className="w-6 h-6 text-blue-400" />
+              </div>
+              <h4 className="font-bold text-white text-lg mb-2">Lead Management</h4>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Capture, organize, and track every lead in one place. See where each prospect is in your 
+                sales pipeline and never let a potential customer slip through the cracks.
+              </p>
+            </div>
+
+            {/* Automated Follow-ups */}
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-colors">
+              <div className="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center mb-4">
+                <Bot className="w-6 h-6 text-orange-400" />
+              </div>
+              <h4 className="font-bold text-white text-lg mb-2">Automated Follow-ups</h4>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Set up automated email and SMS sequences that nurture leads while you're on the job. 
+                Follow up instantly, schedule reminders, and close more deals on autopilot.
+              </p>
+            </div>
+
+            {/* Two-Way SMS & Email */}
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-colors">
+              <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-4">
+                <MessageSquare className="w-6 h-6 text-green-400" />
+              </div>
+              <h4 className="font-bold text-white text-lg mb-2">Two-Way SMS & Email</h4>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Communicate with customers via text and email directly from your CRM. All conversations 
+                are logged automatically so you have a complete history of every interaction.
+              </p>
+            </div>
+
+            {/* Appointment Scheduling */}
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-colors">
+              <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4">
+                <Calendar className="w-6 h-6 text-purple-400" />
+              </div>
+              <h4 className="font-bold text-white text-lg mb-2">Appointment Scheduling</h4>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Let customers book appointments directly from your calendar. Automated reminders reduce 
+                no-shows and keep your schedule full without the back-and-forth.
+              </p>
+            </div>
+
+            {/* Pipeline Management */}
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-colors">
+              <div className="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center mb-4">
+                <BarChart3 className="w-6 h-6 text-cyan-400" />
+              </div>
+              <h4 className="font-bold text-white text-lg mb-2">Visual Sales Pipeline</h4>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Drag-and-drop pipeline view shows exactly where every deal stands. Move leads through 
+                stages from "New Lead" to "Quote Sent" to "Job Won" with a single click.
+              </p>
+            </div>
+
+            {/* Invoicing & Payments */}
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-colors">
+              <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center mb-4">
+                <Receipt className="w-6 h-6 text-emerald-400" />
+              </div>
+              <h4 className="font-bold text-white text-lg mb-2">Invoicing & Payments</h4>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Create and send professional invoices in seconds. Accept credit card payments online 
+                and get paid faster with automated payment reminders.
+              </p>
+            </div>
+
+            {/* Email Marketing */}
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-colors">
+              <div className="w-12 h-12 bg-pink-500/20 rounded-xl flex items-center justify-center mb-4">
+                <Mail className="w-6 h-6 text-pink-400" />
+              </div>
+              <h4 className="font-bold text-white text-lg mb-2">Email Marketing</h4>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Send newsletters, promotions, and updates to your customer list. Pre-built templates 
+                make it easy to stay top-of-mind and generate repeat business.
+              </p>
+            </div>
+
+            {/* Reputation Management */}
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-colors">
+              <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center mb-4">
+                <Star className="w-6 h-6 text-yellow-400" />
+              </div>
+              <h4 className="font-bold text-white text-lg mb-2">Reputation Management</h4>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Automatically request reviews from happy customers after each job. Monitor your online 
+                reputation and respond to reviews from one dashboard.
+              </p>
+            </div>
+
+            {/* Mobile App */}
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10 hover:border-orange-500/30 transition-colors">
+              <div className="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center mb-4">
+                <Smartphone className="w-6 h-6 text-indigo-400" />
+              </div>
+              <h4 className="font-bold text-white text-lg mb-2">Mobile App Access</h4>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Manage your business from anywhere with the mobile app. Check leads, respond to messages, 
+                and update job status right from your phone while on-site.
+              </p>
+            </div>
+          </div>
+
+          {/* Value Comparison */}
+          <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-2xl p-8">
+            <h3 className="text-xl font-bold text-white mb-6 text-center">The Real Value of Pro+</h3>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h4 className="font-semibold text-orange-400 mb-4">If You Bought These Separately:</h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-slate-300">
+                    <span>CRM Software (HubSpot, Salesforce)</span>
+                    <span className="text-slate-400">$50-300/mo</span>
+                  </div>
+                  <div className="flex justify-between text-slate-300">
+                    <span>Email Marketing (Mailchimp, Constant Contact)</span>
+                    <span className="text-slate-400">$20-100/mo</span>
+                  </div>
+                  <div className="flex justify-between text-slate-300">
+                    <span>SMS Marketing Platform</span>
+                    <span className="text-slate-400">$25-75/mo</span>
+                  </div>
+                  <div className="flex justify-between text-slate-300">
+                    <span>Scheduling Software (Calendly Pro)</span>
+                    <span className="text-slate-400">$12-20/mo</span>
+                  </div>
+                  <div className="flex justify-between text-slate-300">
+                    <span>Invoicing Software (QuickBooks)</span>
+                    <span className="text-slate-400">$30-80/mo</span>
+                  </div>
+                  <div className="flex justify-between text-slate-300">
+                    <span>Reputation Management</span>
+                    <span className="text-slate-400">$50-200/mo</span>
+                  </div>
+                  <div className="border-t border-slate-600 pt-3 mt-3 flex justify-between font-bold">
+                    <span className="text-white">Total Monthly Cost</span>
+                    <span className="text-red-400">$187-775/mo</span>
+                  </div>
+                  <div className="flex justify-between font-bold">
+                    <span className="text-white">Annual Cost</span>
+                    <span className="text-red-400">$2,244-9,300/yr</span>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white/5 rounded-xl p-6 flex flex-col justify-center">
+                <h4 className="font-semibold text-green-400 mb-4 text-center">With TavvY Pro+:</h4>
+                <div className="text-center">
+                  <div className="text-5xl font-bold text-white mb-2">$499</div>
+                  <div className="text-slate-400 mb-4">per year — everything included</div>
+                  <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
+                    <div className="text-green-400 font-bold text-lg">You Save Up To $8,800/year</div>
+                    <div className="text-green-400/80 text-sm">Plus unlimited leads, fair distribution, and more</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
