@@ -673,6 +673,243 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Why TavvY vs Pay-Per-Lead Platforms */}
+      <section className="py-20 px-4 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
+              Why Contractors Are Switching to TavvY
+            </h2>
+            <p className="text-slate-600 text-lg max-w-2xl mx-auto">
+              See how TavvY stacks up against pay-per-lead platforms like Thumbtack, Angi, HomeAdvisor, and others.
+            </p>
+          </div>
+
+          {/* Comparison Table */}
+          <div className="overflow-x-auto mb-12">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th className="text-left p-4 bg-slate-50 rounded-tl-xl"></th>
+                  <th className="p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold">
+                    <div className="flex items-center justify-center gap-2">
+                      <img src="/tavvy-logo.png" alt="TavvY" className="h-6 w-auto brightness-0 invert" />
+                      <span>TavvY</span>
+                    </div>
+                  </th>
+                  <th className="p-4 bg-slate-100 text-slate-600 font-medium">Thumbtack</th>
+                  <th className="p-4 bg-slate-100 text-slate-600 font-medium">Angi</th>
+                  <th className="p-4 bg-slate-100 text-slate-600 font-medium rounded-tr-xl">HomeAdvisor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-slate-100">
+                  <td className="p-4 font-medium text-slate-900 bg-slate-50">Pricing Model</td>
+                  <td className="p-4 text-center bg-blue-50">
+                    <span className="font-bold text-blue-600">$99-$499/year flat</span>
+                  </td>
+                  <td className="p-4 text-center text-slate-600">$15-100+ per lead</td>
+                  <td className="p-4 text-center text-slate-600">$15-85+ per lead</td>
+                  <td className="p-4 text-center text-slate-600">$15-100+ per lead</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="p-4 font-medium text-slate-900 bg-slate-50">Same Lead Sold To</td>
+                  <td className="p-4 text-center bg-blue-50">
+                    <span className="font-bold text-green-600">Fair distribution</span>
+                  </td>
+                  <td className="p-4 text-center text-red-500 font-medium">5-10+ contractors</td>
+                  <td className="p-4 text-center text-red-500 font-medium">4-8+ contractors</td>
+                  <td className="p-4 text-center text-red-500 font-medium">4-10+ contractors</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="p-4 font-medium text-slate-900 bg-slate-50">Annual Cost (10 leads/mo)</td>
+                  <td className="p-4 text-center bg-blue-50">
+                    <span className="font-bold text-green-600">$99-$499</span>
+                  </td>
+                  <td className="p-4 text-center text-red-500 font-medium">$1,800-$12,000+</td>
+                  <td className="p-4 text-center text-red-500 font-medium">$1,800-$10,200+</td>
+                  <td className="p-4 text-center text-red-500 font-medium">$1,800-$12,000+</td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="p-4 font-medium text-slate-900 bg-slate-50">Lead Racing</td>
+                  <td className="p-4 text-center bg-blue-50">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                        <Check className="w-4 h-4 text-green-600" />
+                      </div>
+                      <span className="ml-2 text-green-600 font-medium">No racing</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                        <X className="w-4 h-4 text-red-500" />
+                      </div>
+                      <span className="ml-2 text-red-500">Race to call</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                        <X className="w-4 h-4 text-red-500" />
+                      </div>
+                      <span className="ml-2 text-red-500">Race to call</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                        <X className="w-4 h-4 text-red-500" />
+                      </div>
+                      <span className="ml-2 text-red-500">Race to call</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr className="border-b border-slate-100">
+                  <td className="p-4 font-medium text-slate-900 bg-slate-50">Bad Reviews Fade</td>
+                  <td className="p-4 text-center bg-blue-50">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                        <Check className="w-4 h-4 text-green-600" />
+                      </div>
+                      <span className="ml-2 text-green-600 font-medium">After 6 months</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                        <X className="w-4 h-4 text-red-500" />
+                      </div>
+                      <span className="ml-2 text-red-500">Forever</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                        <X className="w-4 h-4 text-red-500" />
+                      </div>
+                      <span className="ml-2 text-red-500">Forever</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                        <X className="w-4 h-4 text-red-500" />
+                      </div>
+                      <span className="ml-2 text-red-500">Forever</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="p-4 font-medium text-slate-900 bg-slate-50 rounded-bl-xl">Hidden Fees</td>
+                  <td className="p-4 text-center bg-blue-50">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                        <Check className="w-4 h-4 text-green-600" />
+                      </div>
+                      <span className="ml-2 text-green-600 font-medium">None</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                        <X className="w-4 h-4 text-red-500" />
+                      </div>
+                      <span className="ml-2 text-red-500">Promote fees</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                        <X className="w-4 h-4 text-red-500" />
+                      </div>
+                      <span className="ml-2 text-red-500">Service fees</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-center rounded-br-xl">
+                    <div className="flex items-center justify-center">
+                      <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                        <X className="w-4 h-4 text-red-500" />
+                      </div>
+                      <span className="ml-2 text-red-500">Annual fees</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* The Math Section */}
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-8">
+              <h3 className="text-xl font-bold text-red-700 mb-4 flex items-center gap-2">
+                <DollarSign className="w-6 h-6" />
+                The Pay-Per-Lead Math
+              </h3>
+              <div className="space-y-3 text-slate-700">
+                <p>Let's say you get <strong>10 leads per month</strong> at $50 each:</p>
+                <ul className="space-y-2 ml-4">
+                  <li className="flex items-start gap-2">
+                    <X className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                    <span>Monthly cost: <strong className="text-red-600">$500</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <X className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                    <span>Annual cost: <strong className="text-red-600">$6,000+</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <X className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                    <span>Same leads sent to 5-10 other contractors</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <X className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                    <span>Maybe 2-3 actually convert to jobs</span>
+                  </li>
+                </ul>
+                <p className="text-red-600 font-bold mt-4">Real cost per job: $2,000-$3,000</p>
+              </div>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-8">
+              <h3 className="text-xl font-bold text-green-700 mb-4 flex items-center gap-2">
+                <Check className="w-6 h-6" />
+                The TavvY Math
+              </h3>
+              <div className="space-y-3 text-slate-700">
+                <p>With TavvY Pro at <strong>$99/year</strong>:</p>
+                <ul className="space-y-2 ml-4">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span>Monthly cost: <strong className="text-green-600">$8.25</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span>Annual cost: <strong className="text-green-600">$99</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span>Leads distributed fairly - no racing</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span>Higher conversion because customers aren't overwhelmed</span>
+                  </li>
+                </ul>
+                <p className="text-green-600 font-bold mt-4">You save: $5,900+ per year</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Testimonial-style callout */}
+          <div className="mt-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 text-center text-white">
+            <p className="text-xl md:text-2xl font-medium mb-4">
+              "I was spending $800/month on Thumbtack and HomeAdvisor combined. Now I pay $99/year and get better quality leads."
+            </p>
+            <p className="text-blue-200">— Mike R., Plumber, Austin TX</p>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section className="py-20 px-4 bg-slate-50">
         <div className="container mx-auto max-w-3xl">
