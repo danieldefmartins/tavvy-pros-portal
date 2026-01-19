@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { createClient } from "@supabase/supabase-js";
+import { useEffect, useRef } from "react";
 
 // Supabase client for Edge Function calls
 const supabase = createClient(
@@ -47,6 +48,61 @@ export default function LandingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [billingCycle, setBillingCycle] = useState<'yearly' | 'monthly'>('yearly');
+  const [spotsLeft, setSpotsLeft] = useState<number>(5000);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const counterRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Urgency counter logic - persistent per visitor
+  useEffect(() => {
+    // Get or initialize visitor's counter from localStorage
+    const storedSpots = localStorage.getItem('tavvy_promo_spots');
+    const lastVisit = localStorage.getItem('tavvy_last_visit');
+    const now = Date.now();
+    
+    let currentSpots: number;
+    
+    if (storedSpots && lastVisit) {
+      // Returning visitor - decrease by random amount (1-3) based on time away
+      const timeSinceLastVisit = now - parseInt(lastVisit);
+      const hoursAway = Math.floor(timeSinceLastVisit / (1000 * 60 * 60));
+      const decrease = Math.min(Math.max(1, hoursAway * 2 + Math.floor(Math.random() * 3)), 50);
+      currentSpots = Math.max(100, parseInt(storedSpots) - decrease);
+    } else {
+      // New visitor - start at 435 (creates urgency, not full 5000)
+      currentSpots = 435;
+    }
+    
+    setSpotsLeft(currentSpots);
+    localStorage.setItem('tavvy_promo_spots', currentSpots.toString());
+    localStorage.setItem('tavvy_last_visit', now.toString());
+    
+    // Simulate "someone buying" - random decrements while viewing
+    const simulatePurchases = () => {
+      const randomInterval = 15000 + Math.random() * 45000; // 15-60 seconds
+      
+      counterRef.current = setTimeout(() => {
+        setSpotsLeft(prev => {
+          const newValue = Math.max(100, prev - 1);
+          localStorage.setItem('tavvy_promo_spots', newValue.toString());
+          
+          // Trigger animation
+          setIsAnimating(true);
+          setTimeout(() => setIsAnimating(false), 1000);
+          
+          return newValue;
+        });
+        simulatePurchases(); // Schedule next decrement
+      }, randomInterval);
+    };
+    
+    simulatePurchases();
+    
+    return () => {
+      if (counterRef.current) {
+        clearTimeout(counterRef.current);
+      }
+    };
+  }, []);
 
   const handleGetStarted = async (plan: 'pro' | 'pro_plus' = 'pro', cycle: 'yearly' | 'monthly' = 'yearly') => {
     const planKey = `${plan}_${cycle}`;
@@ -133,8 +189,33 @@ export default function LandingPage() {
         </div>
       </nav>
 
+      {/* Urgency Counter Banner */}
+      <div className="fixed top-[60px] left-0 right-0 z-40 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white py-2 px-4 shadow-lg">
+        <div className="container mx-auto flex items-center justify-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="animate-pulse">🔥</span>
+            <span className="font-medium text-sm md:text-base">
+              <span className="hidden sm:inline">WORLDWIDE PROMOTION: </span>
+              Only{" "}
+              <span 
+                className={`font-bold text-xl md:text-2xl mx-1 inline-block transition-all duration-300 ${
+                  isAnimating ? 'scale-125 text-yellow-300' : ''
+                }`}
+              >
+                {spotsLeft.toLocaleString()}
+              </span>
+              {" "}spots left at promotional pricing!
+            </span>
+            <span className="animate-pulse">🔥</span>
+          </div>
+          <span className="hidden md:inline text-yellow-200 text-sm font-medium border-l border-white/30 pl-3 ml-2">
+            This promotion won't last a week!
+          </span>
+        </div>
+      </div>
+
       {/* Hero Section */}
-      <section className="pt-28 pb-16 px-4 relative overflow-hidden">
+      <section className="pt-36 pb-16 px-4 relative overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute top-20 right-0 w-96 h-96 bg-gradient-to-br from-blue-100 to-orange-100 rounded-full blur-3xl opacity-60" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-orange-100 to-blue-100 rounded-full blur-3xl opacity-50" />
@@ -243,7 +324,9 @@ export default function LandingPage() {
                       That's just $8.25/month first year
                     </p>
                     <p className="text-slate-500 text-xs mb-6">
-                      For the first 1,000 users only
+                      <span className={`font-semibold ${isAnimating ? 'text-red-500' : 'text-orange-600'}`}>
+                        {spotsLeft.toLocaleString()}
+                      </span> of 5,000 spots left worldwide
                     </p>
                   </>
                 ) : (
@@ -319,7 +402,9 @@ export default function LandingPage() {
                       That's just $41.58/month first year
                     </p>
                     <p className="text-slate-500 text-xs mb-6">
-                      Promotional pricing - limited time
+                      <span className={`font-semibold ${isAnimating ? 'text-yellow-300' : 'text-orange-400'}`}>
+                        {spotsLeft.toLocaleString()}
+                      </span> of 5,000 spots left worldwide
                     </p>
                   </>
                 ) : (
@@ -698,7 +783,9 @@ export default function LandingPage() {
                     That's just $8.25/month first year
                   </p>
                   <p className="text-slate-500 text-xs mb-8">
-                    For the first 1,000 users only
+                    <span className={`font-semibold ${isAnimating ? 'text-red-500' : 'text-orange-600'}`}>
+                      {spotsLeft.toLocaleString()}
+                    </span> of 5,000 spots left worldwide
                   </p>
                 </>
               ) : (
@@ -770,7 +857,9 @@ export default function LandingPage() {
                       That's just $41.58/month first year
                     </p>
                     <p className="text-slate-500 text-xs mb-8">
-                      Promotional pricing - limited time
+                      <span className={`font-semibold ${isAnimating ? 'text-yellow-300' : 'text-orange-400'}`}>
+                        {spotsLeft.toLocaleString()}
+                      </span> of 5,000 spots left worldwide
                     </p>
                   </>
                 ) : (
