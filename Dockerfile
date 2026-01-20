@@ -10,7 +10,7 @@ RUN npm install -g pnpm@10.4.1
 COPY package.json ./
 COPY pnpm-lock.yaml ./
 
-# Install dependencies
+# Install all dependencies (including dev for build)
 RUN pnpm install
 
 # Copy source code
@@ -31,8 +31,8 @@ RUN npm install -g pnpm@10.4.1
 COPY package.json ./
 COPY pnpm-lock.yaml ./
 
-# Install production dependencies only
-RUN pnpm install --prod
+# Install all dependencies (vite is needed at runtime for serving static files)
+RUN pnpm install
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
