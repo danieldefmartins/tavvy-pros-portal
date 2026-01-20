@@ -23,14 +23,14 @@ const COUPONS: Record<string, string> = {
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, x-client-info, apikey",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
-  // Handle CORS preflight
+  // Handle CORS preflight - MUST return 200 OK
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { status: 200, headers: corsHeaders });
   }
 
   try {
@@ -80,6 +80,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ url: session.url }),
       {
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
