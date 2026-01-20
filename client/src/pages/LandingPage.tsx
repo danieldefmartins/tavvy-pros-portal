@@ -52,12 +52,12 @@ export default function LandingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [billingCycle, setBillingCycle] = useState<'yearly' | 'monthly'>('yearly');
-  const [spotsLeft, setSpotsLeft] = useState<number>(5000);
+  const [spotsLeft, setSpotsLeft] = useState<number>(1000);
   const [isAnimating, setIsAnimating] = useState(false);
   const counterRef = useRef<NodeJS.Timeout | null>(null);
   const [showProPlusModal, setShowProPlusModal] = useState(false);
 
-  // Urgency counter logic - persistent per visitor
+  // Urgency counter logic - persistent per visitor (1,000 spots max)
   useEffect(() => {
     const storedSpots = localStorage.getItem('tavvy_promo_spots');
     const lastVisit = localStorage.getItem('tavvy_last_visit');
@@ -69,7 +69,7 @@ export default function LandingPage() {
       const timeSinceLastVisit = now - parseInt(lastVisit);
       const hoursAway = Math.floor(timeSinceLastVisit / (1000 * 60 * 60));
       const decrease = Math.min(Math.max(1, hoursAway * 2 + Math.floor(Math.random() * 3)), 50);
-      currentSpots = Math.max(100, parseInt(storedSpots) - decrease);
+      currentSpots = Math.max(100, Math.min(parseInt(storedSpots) - decrease, 1000));
     } else {
       currentSpots = 435;
     }
@@ -158,8 +158,12 @@ export default function LandingPage() {
 
   const faqItems = [
     {
+      question: "Is $99/year forever?",
+      answer: "No — the $99 rate is for your first 12 months. After that, your plan renews at the regular rate ($499/year for Pro, $1,299/year for Pro+) unless you cancel. You can cancel anytime during your subscription."
+    },
+    {
       question: "How is this different from Thumbtack, Angi, or HomeAdvisor?",
-      answer: "Those platforms charge you $15-100+ per lead, and sell the same lead to 5-10 other contractors. You're racing against everyone else, and most of your money goes to leads that never convert. Tavvy charges a flat $99/year for unlimited leads, distributed fairly among pros in your area. No racing, no per-lead fees, no surprises."
+      answer: "Those platforms charge you $15-100+ per lead, and sell the same lead to 5-10 other contractors. You're racing against everyone else, and most of your money goes to leads that never convert. Tavvy charges a flat $99 for your first 12 months for unlimited leads, distributed fairly among pros in your area. No racing, no per-lead fees, no surprises."
     },
     {
       question: "What do you mean by 'fair lead distribution'?",
@@ -171,7 +175,7 @@ export default function LandingPage() {
     },
     {
       question: "What's the difference between Pro and Pro+?",
-      answer: "Pro ($99/year) gives you unlimited leads, fair distribution, and our fair review system. Pro+ ($499/year) includes everything in Pro plus a full CRM system (360 For Business) with automation, invoicing, scheduling, email marketing, and more - tools that would cost $200+/month if purchased separately. Plus 200 sponsored searches per month and digital business cards."
+      answer: "Pro ($99 for first 12 months, then $499/year) gives you unlimited leads, fair distribution, and our fair review system. Pro+ ($499 for first 12 months, then $1,299/year) includes everything in Pro plus a full CRM system (360 For Business) with automation, invoicing, scheduling, email marketing, and more - tools that would cost $200+/month if purchased separately. Plus 200 sponsored searches per month and digital business cards."
     },
     {
       question: "What trades/services do you support?",
@@ -179,7 +183,7 @@ export default function LandingPage() {
     },
     {
       question: "Can I cancel anytime?",
-      answer: "Yes! We offer a 30-day money-back guarantee. If Tavvy isn't working for you within the first 30 days, we'll refund your payment in full. No questions asked, no hassle."
+      answer: "Yes! We offer a 30-day money-back guarantee. If Tavvy isn't working for you within the first 30 days, we'll refund your payment in full. No questions asked, no hassle. You can also cancel anytime before renewal."
     },
   ];
 
@@ -222,7 +226,7 @@ export default function LandingPage() {
               <Crown className="w-4 h-4 text-white" />
             </div>
             <div className="text-center sm:text-left">
-              <span className="text-orange-400 font-bold text-xs uppercase tracking-wider">Early Adopter Exclusive</span>
+              <span className="text-orange-400 font-bold text-xs uppercase tracking-wider">Founding Pro Pricing</span>
               <div className="flex items-center gap-2">
                 <span className="font-medium text-sm md:text-base text-white">Only</span>
                 <span 
@@ -236,14 +240,14 @@ export default function LandingPage() {
                 >
                   {spotsLeft.toLocaleString()}
                 </span>
-                <span className="font-medium text-sm md:text-base text-white">of 5,000 spots left</span>
+                <span className="font-medium text-sm md:text-base text-white">of 1,000 spots left</span>
               </div>
             </div>
           </div>
           <div className="hidden md:block h-8 w-px bg-slate-600" />
           <div className="hidden md:block text-center">
-            <p className="text-yellow-400 font-semibold text-sm">Lock in $99/year forever</p>
-            <p className="text-slate-400 text-xs">Price goes to $499/year after launch</p>
+            <p className="text-yellow-400 font-semibold text-sm">$99 for your first 12 months</p>
+            <p className="text-slate-400 text-xs">Then regular price. Cancel anytime.</p>
           </div>
         </div>
       </div>
@@ -253,207 +257,111 @@ export default function LandingPage() {
         <div className="absolute top-20 right-0 w-96 h-96 bg-gradient-to-br from-blue-100 to-orange-100 rounded-full blur-3xl opacity-60" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-orange-100 to-blue-100 rounded-full blur-3xl opacity-50" />
         
-        <div className="container mx-auto max-w-4xl relative">
+        <div className="container mx-auto max-w-4xl relative z-10">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-slate-900">
-              Stop Buying Leads.
-              <br />
-              <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                Start Winning Jobs.
-              </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+              Stop Buying Leads.<br />
+              <span className="text-blue-600">Start Winning Jobs.</span>
             </h1>
-
-            <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Tavvy was built by contractors to be fair. <strong className="text-slate-800">One flat fee. No per-lead charges. No racing for the same lead. Ever.</strong>
+            <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+              $99 for your first 12 months. Then regular price.<br />
+              <span className="text-slate-500">No lead fees. No bidding wars.</span>
             </p>
-
             <Button
               size="lg"
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-lg px-10 py-7 shadow-xl shadow-orange-500/30 transition-all hover:shadow-orange-500/40 hover:scale-[1.02]"
+              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-lg px-10 py-7 shadow-xl shadow-orange-500/30"
               onClick={() => scrollToSignup()}
             >
-              Get Started — Plans from $99/year
+              Get Started — Plans from $99
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
+            <p className="text-slate-500 text-sm mt-4">
+              Intro rate applies to your first 12 months. Renews at the regular rate unless canceled.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* SECTION 1.5: Early Adopter Exclusive - BIG IMPACT */}
-      <section className="py-12 px-4 bg-gradient-to-b from-slate-900 to-slate-800 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
-        
-        <div className="container mx-auto max-w-4xl relative">
-          {/* Premium Badge */}
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-2 rounded-full shadow-lg shadow-orange-500/30">
-              <Crown className="w-5 h-5" />
-              <span className="font-bold uppercase tracking-wide text-sm">Early Adopter Exclusive</span>
-            </div>
-          </div>
-
-          {/* Main Counter Display */}
-          <div className="text-center mb-8">
-            <p className="text-slate-400 text-lg mb-2">Only</p>
-            <div className="flex items-center justify-center gap-4">
-              <div 
-                className={`relative transition-all duration-500 ${isAnimating ? 'scale-105' : ''}`}
-              >
-                <span 
-                  className="text-7xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500"
-                  style={{ 
-                    textShadow: '0 0 60px rgba(251, 146, 60, 0.4)',
-                    fontVariantNumeric: 'tabular-nums'
-                  }}
-                >
-                  {spotsLeft.toLocaleString()}
-                </span>
-                {isAnimating && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-full h-full bg-orange-400/20 rounded-full animate-ping" />
-                  </div>
-                )}
-              </div>
-            </div>
-            <p className="text-white text-2xl md:text-3xl font-bold mt-2">of 5,000 Founding Pro Spots Left</p>
-          </div>
-
-          {/* Value Proposition */}
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 md:p-8 mb-8">
-            <div className="grid md:grid-cols-3 gap-6 text-center">
-              <div>
-                <div className="text-4xl md:text-5xl font-black text-orange-400 mb-2">$99</div>
-                <p className="text-white font-semibold">Your Price Forever</p>
-                <p className="text-slate-400 text-sm">Lock it in today</p>
-              </div>
-              <div className="flex items-center justify-center">
-                <ArrowRight className="w-8 h-8 text-slate-500 rotate-90 md:rotate-0" />
-              </div>
-              <div>
-                <div className="text-4xl md:text-5xl font-black text-slate-500 line-through">$499</div>
-                <p className="text-slate-400 font-semibold">Regular Price</p>
-                <p className="text-slate-500 text-sm">After launch</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Urgency Message */}
-          <div className="text-center">
-            <p className="text-yellow-400 font-bold text-lg md:text-xl mb-4">
-              ⚠️ When these spots are gone, the price goes up 5x
-            </p>
-            <p className="text-slate-400 max-w-2xl mx-auto">
-              We're offering this exclusive pricing to our first 5,000 contractors who believe in fair leads and fair reviews. 
-              This is a <strong className="text-white">one-time opportunity</strong> to lock in the lowest price we'll ever offer.
-            </p>
-          </div>
-
-          {/* CTA */}
-          <div className="flex justify-center mt-8">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-lg px-12 py-7 shadow-xl shadow-orange-500/30 transition-all hover:shadow-orange-500/40 hover:scale-[1.02]"
-              onClick={() => scrollToSignup()}
-            >
-              Claim Your Founding Pro Spot
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 2: The Decision Block */}
+      {/* SECTION 2: Decision Block */}
       <section className="py-12 px-4 bg-white">
         <div className="container mx-auto max-w-3xl">
-          <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-3xl p-8 md:p-12 border border-slate-200 shadow-lg">
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-slate-900">
+          <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-3xl p-8 md:p-12 border border-blue-100">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 text-center mb-8">
               Is Tavvy Pro Right For You?
             </h2>
             
             <div className="space-y-4 mb-8">
               {[
-                "Are you a local service professional?",
-                "Are you tired of paying for leads that go nowhere?",
-                "Do you want predictable costs and a clear ROI?",
-                "Do you believe in fair reviews and a level playing field?",
+                "You're a local service pro (plumber, electrician, contractor, etc.)",
+                "You're tired of paying $50-100+ per lead that goes nowhere",
+                "You want predictable costs, not surprise bills",
+                "You believe one bad review shouldn't define your business",
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-4 bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Check className="w-5 h-5 text-green-600" />
-                  </div>
-                  <span className="text-lg text-slate-700">{item}</span>
+                <div key={i} className="flex items-center gap-3 bg-white rounded-xl p-4 shadow-sm">
+                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  <span className="text-slate-700 font-medium">{item}</span>
                 </div>
               ))}
             </div>
-
-            <div className="text-center">
-              <p className="text-xl font-semibold text-blue-600">
-                Then Tavvy is built for you.
-              </p>
-            </div>
+            
+            <p className="text-center text-xl font-bold text-blue-600">
+              Then Tavvy is built for you.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* SECTION 3: The ROI Callout */}
-      <section className="py-12 px-4 bg-gradient-to-r from-blue-600 to-blue-700">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+      {/* SECTION 3: ROI Callout */}
+      <section className="py-12 px-4 bg-gradient-to-r from-green-600 to-emerald-600">
+        <div className="container mx-auto max-w-4xl text-center text-white">
+          <h2 className="text-2xl md:text-4xl font-bold mb-4">
             If Tavvy Gets You Just ONE Job This Year, It Pays For Itself.
           </h2>
-          <p className="text-xl text-blue-100">
+          <p className="text-xl text-green-100">
             Everything else is pure profit.
           </p>
         </div>
       </section>
 
-      {/* SECTION 4: The Pricing Table */}
+      {/* SECTION 4: Pricing Table */}
       <section id="pricing" className="py-16 px-4 bg-[#f9f7f2]">
         <div className="container mx-auto max-w-5xl">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1.5 rounded-full mb-4 shadow-lg shadow-orange-500/20">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
               <Crown className="w-4 h-4" />
-              <span className="font-bold text-sm uppercase tracking-wide">Founding Pro Pricing</span>
+              Founding Pro Pricing
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
-              Lock In Your Rate Forever
+              Lock In Your First-Year Rate
             </h2>
             <p className="text-lg text-slate-600 mb-4">
-              This exclusive pricing is only available to our first 5,000 contractors
+              This exclusive pricing is only available to our first 1,000 contractors
             </p>
-            <div className="inline-flex items-center gap-3 bg-slate-900 text-white rounded-full px-6 py-3 shadow-xl">
-              <div className="flex items-center gap-2">
-                <span className="text-slate-400">Only</span>
-                <span 
-                  className={`font-black text-2xl text-orange-400 transition-all duration-500 ${isAnimating ? 'scale-110 text-yellow-400' : ''}`}
-                  style={{ fontVariantNumeric: 'tabular-nums' }}
-                >
-                  {spotsLeft.toLocaleString()}
-                </span>
-                <span className="text-slate-400">spots left</span>
-              </div>
-              <div className="h-6 w-px bg-slate-600" />
-              <span className="text-yellow-400 font-semibold text-sm">Price goes up 5x after</span>
+            <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-full text-sm">
+              <span className="font-bold text-orange-400">{spotsLeft.toLocaleString()}</span>
+              <span>spots left</span>
+              <span className="text-slate-400">|</span>
+              <span className="text-yellow-400">Price goes up 5x after</span>
             </div>
           </div>
 
           {/* Billing Toggle */}
           <div className="flex justify-center mb-8">
-            <div className="bg-white rounded-full p-1 shadow-lg border border-slate-200 inline-flex">
+            <div className="bg-white rounded-full p-1 shadow-md border border-slate-200">
               <button
                 className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                  billingCycle === 'yearly'
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md'
+                  billingCycle === 'yearly' 
+                    ? 'bg-slate-900 text-white shadow-sm' 
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
                 onClick={() => setBillingCycle('yearly')}
               >
-                Yearly<span className="hidden sm:inline ml-1 text-xs opacity-80">Save up to $800</span>
+                Yearly <span className="text-green-400 text-xs ml-1">Save $$$</span>
               </button>
               <button
                 className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                  billingCycle === 'monthly'
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md'
+                  billingCycle === 'monthly' 
+                    ? 'bg-slate-900 text-white shadow-sm' 
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
                 onClick={() => setBillingCycle('monthly')}
@@ -463,28 +371,25 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Pricing Cards */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Pro Plan */}
-            <Card className="bg-white border-2 border-slate-200 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 relative overflow-hidden">
-              <div className="absolute top-4 left-4">
-                <span className="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
-                  MOST POPULAR
-                </span>
-              </div>
-              <CardContent className="p-8 pt-14">
+            <Card className="bg-white border-2 border-slate-200 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
+              <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-slate-900 mb-4">Pro</h3>
                 
                 {billingCycle === 'yearly' ? (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
                       <span className="text-5xl font-bold text-slate-900">$99</span>
-                      <span className="text-slate-500">/first year</span>
                     </div>
+                    <p className="text-slate-600 text-sm mb-2">for your first 12 months</p>
                     <p className="text-slate-500 text-sm mb-2">Then $499/year</p>
                     <div className="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full mb-4">
-                      Save $400 first year!
+                      Save $400 your first year
                     </div>
+                    <p className="text-slate-500 text-xs mb-4">
+                      <span className="font-bold text-orange-600">{spotsLeft.toLocaleString()}</span> of 1,000 spots left
+                    </p>
                   </>
                 ) : (
                   <>
@@ -510,9 +415,13 @@ export default function LandingPage() {
                   onClick={() => handleGetStarted('pro', billingCycle)}
                   disabled={isLoading && loadingPlan === `pro_${billingCycle}`}
                 >
-                  {isLoading && loadingPlan === `pro_${billingCycle}` ? 'Processing...' : `Get Pro - ${billingCycle === 'yearly' ? '$99/year' : '$39.99/mo'}`}
+                  {isLoading && loadingPlan === `pro_${billingCycle}` ? 'Processing...' : `Get Pro - ${billingCycle === 'yearly' ? '$99' : '$39.99/mo'}`}
                 </Button>
-                <p className="text-center text-slate-500 text-sm mt-3">30-day money-back guarantee</p>
+                <p className="text-center text-slate-500 text-xs mt-3">
+                  {billingCycle === 'yearly' 
+                    ? 'Renews at $499/year after 12 months. Cancel anytime.' 
+                    : 'Renews at $49.99/mo after 12 months. Cancel anytime.'}
+                </p>
               </CardContent>
             </Card>
 
@@ -530,12 +439,15 @@ export default function LandingPage() {
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
                       <span className="text-5xl font-bold">$499</span>
-                      <span className="text-slate-400">/first year</span>
                     </div>
-                    <p className="text-slate-400 text-sm mb-2">Then $1,299/year</p>
+                    <p className="text-slate-400 text-sm mb-2">for your first 12 months</p>
+                    <p className="text-slate-500 text-sm mb-2">Then $1,299/year</p>
                     <div className="inline-block bg-orange-500 text-white text-sm font-medium px-3 py-1 rounded-full mb-4">
-                      Save $800 first year!
+                      Save $800 your first year
                     </div>
+                    <p className="text-slate-400 text-xs mb-4">
+                      <span className="font-bold text-orange-400">{spotsLeft.toLocaleString()}</span> of 1,000 spots left
+                    </p>
                   </>
                 ) : (
                   <>
@@ -561,9 +473,13 @@ export default function LandingPage() {
                   onClick={() => handleGetStarted('pro_plus', billingCycle)}
                   disabled={isLoading && loadingPlan === `pro_plus_${billingCycle}`}
                 >
-                  {isLoading && loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : `Get Pro+ - ${billingCycle === 'yearly' ? '$499/year' : '$59.99/mo'}`}
+                  {isLoading && loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : `Get Pro+ - ${billingCycle === 'yearly' ? '$499' : '$59.99/mo'}`}
                 </Button>
-                <p className="text-center text-slate-400 text-sm mt-3">30-day money-back guarantee</p>
+                <p className="text-center text-slate-400 text-xs mt-3">
+                  {billingCycle === 'yearly' 
+                    ? 'Renews at $1,299/year after 12 months. Cancel anytime.' 
+                    : 'Renews at $109.99/mo after 12 months. Cancel anytime.'}
+                </p>
                 
                 <button 
                   className="w-full text-center text-orange-400 text-sm mt-4 hover:underline"
@@ -662,7 +578,7 @@ export default function LandingPage() {
                 ))}
               </div>
               <blockquote className="text-xl md:text-2xl text-slate-700 text-center mb-6 leading-relaxed">
-                "I was spending $800/month on Thumbtack and HomeAdvisor combined. Now I pay $99/year and get better quality leads. The fair distribution means I'm not racing against 10 other guys for the same job."
+                "I was spending $800/month on Thumbtack and HomeAdvisor combined. Now I pay $99 for my first year and get better quality leads. The fair distribution means I'm not racing against 10 other guys for the same job."
               </blockquote>
               <div className="text-center">
                 <p className="font-bold text-slate-900">Mike R.</p>
@@ -728,7 +644,7 @@ export default function LandingPage() {
               className="border-2 border-white text-white hover:bg-white/10 text-lg px-8 py-6"
               onClick={() => handleGetStarted('pro_plus', billingCycle)}
             >
-              Get Pro+ — $499/year
+              Get Pro+ — $499 first year
             </Button>
           </div>
         </div>
@@ -784,16 +700,19 @@ export default function LandingPage() {
               className="bg-white text-slate-900 hover:bg-slate-100 text-lg px-8 py-6 shadow-xl"
               onClick={() => handleGetStarted('pro', billingCycle)}
             >
-              Get Pro — $99/year
+              Get Pro — $99 first year
             </Button>
             <Button
               size="lg"
               className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-lg px-8 py-6 shadow-xl shadow-orange-500/30"
               onClick={() => handleGetStarted('pro_plus', billingCycle)}
             >
-              Get Pro+ — $499/year
+              Get Pro+ — $499 first year
             </Button>
           </div>
+          <p className="text-slate-500 text-sm mt-4">
+            Intro rate applies to your first 12 months. Renews at the regular rate unless canceled.
+          </p>
         </div>
       </section>
 
@@ -862,8 +781,11 @@ export default function LandingPage() {
                     handleGetStarted('pro_plus', billingCycle);
                   }}
                 >
-                  Get Pro+ — $499/year
+                  Get Pro+ — $499 first year
                 </Button>
+                <p className="text-slate-400 text-xs mt-3">
+                  Renews at $1,299/year after 12 months. Cancel anytime.
+                </p>
               </div>
             </div>
           </div>
