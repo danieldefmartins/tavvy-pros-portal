@@ -214,28 +214,37 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Urgency Counter Banner */}
-      <div className="fixed top-[60px] left-0 right-0 z-40 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white py-2 px-4 shadow-lg">
-        <div className="container mx-auto flex items-center justify-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="animate-pulse">🔥</span>
-            <span className="font-medium text-sm md:text-base">
-              <span className="hidden sm:inline">FOUNDING PRO PRICING: </span>
-              Only{" "}
-              <span 
-                className={`font-bold text-xl md:text-2xl mx-1 inline-block transition-all duration-300 ${
-                  isAnimating ? 'scale-125 text-yellow-300' : ''
-                }`}
-              >
-                {spotsLeft.toLocaleString()}
-              </span>
-              {" "}spots left!
-            </span>
-            <span className="animate-pulse">🔥</span>
+      {/* Premium Early Adopter Banner - Fixed at top */}
+      <div className="fixed top-[60px] left-0 right-0 z-40 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white py-3 px-4 shadow-xl border-b border-orange-500/30">
+        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6">
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center justify-center w-8 h-8 bg-orange-500 rounded-full animate-pulse">
+              <Crown className="w-4 h-4 text-white" />
+            </div>
+            <div className="text-center sm:text-left">
+              <span className="text-orange-400 font-bold text-xs uppercase tracking-wider">Early Adopter Exclusive</span>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-sm md:text-base text-white">Only</span>
+                <span 
+                  className={`font-black text-2xl md:text-3xl text-orange-400 inline-block transition-all duration-500 ${
+                    isAnimating ? 'scale-110 text-yellow-400' : ''
+                  }`}
+                  style={{ 
+                    textShadow: '0 0 20px rgba(251, 146, 60, 0.5)',
+                    fontVariantNumeric: 'tabular-nums'
+                  }}
+                >
+                  {spotsLeft.toLocaleString()}
+                </span>
+                <span className="font-medium text-sm md:text-base text-white">of 5,000 spots left</span>
+              </div>
+            </div>
           </div>
-          <span className="hidden md:inline text-yellow-200 text-sm font-medium border-l border-white/30 pl-3 ml-2">
-            Lock in your rate before we go public!
-          </span>
+          <div className="hidden md:block h-8 w-px bg-slate-600" />
+          <div className="hidden md:block text-center">
+            <p className="text-yellow-400 font-semibold text-sm">Lock in $99/year forever</p>
+            <p className="text-slate-400 text-xs">Price goes to $499/year after launch</p>
+          </div>
         </div>
       </div>
 
@@ -264,6 +273,89 @@ export default function LandingPage() {
               onClick={() => scrollToSignup()}
             >
               Get Started — Plans from $99/year
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 1.5: Early Adopter Exclusive - BIG IMPACT */}
+      <section className="py-12 px-4 bg-gradient-to-b from-slate-900 to-slate-800 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
+        
+        <div className="container mx-auto max-w-4xl relative">
+          {/* Premium Badge */}
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-6 py-2 rounded-full shadow-lg shadow-orange-500/30">
+              <Crown className="w-5 h-5" />
+              <span className="font-bold uppercase tracking-wide text-sm">Early Adopter Exclusive</span>
+            </div>
+          </div>
+
+          {/* Main Counter Display */}
+          <div className="text-center mb-8">
+            <p className="text-slate-400 text-lg mb-2">Only</p>
+            <div className="flex items-center justify-center gap-4">
+              <div 
+                className={`relative transition-all duration-500 ${isAnimating ? 'scale-105' : ''}`}
+              >
+                <span 
+                  className="text-7xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500"
+                  style={{ 
+                    textShadow: '0 0 60px rgba(251, 146, 60, 0.4)',
+                    fontVariantNumeric: 'tabular-nums'
+                  }}
+                >
+                  {spotsLeft.toLocaleString()}
+                </span>
+                {isAnimating && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-full h-full bg-orange-400/20 rounded-full animate-ping" />
+                  </div>
+                )}
+              </div>
+            </div>
+            <p className="text-white text-2xl md:text-3xl font-bold mt-2">of 5,000 Founding Pro Spots Left</p>
+          </div>
+
+          {/* Value Proposition */}
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6 md:p-8 mb-8">
+            <div className="grid md:grid-cols-3 gap-6 text-center">
+              <div>
+                <div className="text-4xl md:text-5xl font-black text-orange-400 mb-2">$99</div>
+                <p className="text-white font-semibold">Your Price Forever</p>
+                <p className="text-slate-400 text-sm">Lock it in today</p>
+              </div>
+              <div className="flex items-center justify-center">
+                <ArrowRight className="w-8 h-8 text-slate-500 rotate-90 md:rotate-0" />
+              </div>
+              <div>
+                <div className="text-4xl md:text-5xl font-black text-slate-500 line-through">$499</div>
+                <p className="text-slate-400 font-semibold">Regular Price</p>
+                <p className="text-slate-500 text-sm">After launch</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Urgency Message */}
+          <div className="text-center">
+            <p className="text-yellow-400 font-bold text-lg md:text-xl mb-4">
+              ⚠️ When these spots are gone, the price goes up 5x
+            </p>
+            <p className="text-slate-400 max-w-2xl mx-auto">
+              We're offering this exclusive pricing to our first 5,000 contractors who believe in fair leads and fair reviews. 
+              This is a <strong className="text-white">one-time opportunity</strong> to lock in the lowest price we'll ever offer.
+            </p>
+          </div>
+
+          {/* CTA */}
+          <div className="flex justify-center mt-8">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-lg px-12 py-7 shadow-xl shadow-orange-500/30 transition-all hover:shadow-orange-500/40 hover:scale-[1.02]"
+              onClick={() => scrollToSignup()}
+            >
+              Claim Your Founding Pro Spot
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
@@ -319,16 +411,29 @@ export default function LandingPage() {
       <section id="pricing" className="py-16 px-4 bg-[#f9f7f2]">
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1.5 rounded-full mb-4 shadow-lg shadow-orange-500/20">
+              <Crown className="w-4 h-4" />
+              <span className="font-bold text-sm uppercase tracking-wide">Founding Pro Pricing</span>
+            </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
-              Founding Pro Pricing
+              Lock In Your Rate Forever
             </h2>
-            <p className="text-lg text-slate-600">
-              Lock in your rate before we go public
+            <p className="text-lg text-slate-600 mb-4">
+              This exclusive pricing is only available to our first 5,000 contractors
             </p>
-            <div className="inline-flex items-center gap-2 bg-red-100 text-red-700 rounded-full px-4 py-2 mt-4 font-medium">
-              <span className="animate-pulse">🔥</span>
-              For the First {spotsLeft.toLocaleString()} Pros Only
-              <span className="animate-pulse">🔥</span>
+            <div className="inline-flex items-center gap-3 bg-slate-900 text-white rounded-full px-6 py-3 shadow-xl">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400">Only</span>
+                <span 
+                  className={`font-black text-2xl text-orange-400 transition-all duration-500 ${isAnimating ? 'scale-110 text-yellow-400' : ''}`}
+                  style={{ fontVariantNumeric: 'tabular-nums' }}
+                >
+                  {spotsLeft.toLocaleString()}
+                </span>
+                <span className="text-slate-400">spots left</span>
+              </div>
+              <div className="h-6 w-px bg-slate-600" />
+              <span className="text-yellow-400 font-semibold text-sm">Price goes up 5x after</span>
             </div>
           </div>
 
