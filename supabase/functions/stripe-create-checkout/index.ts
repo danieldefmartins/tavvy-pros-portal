@@ -57,7 +57,6 @@ serve(async (req) => {
       mode: "subscription",
       success_url: successUrl,
       cancel_url: cancelUrl,
-      allow_promotion_codes: false, // Disable promo codes since we're applying coupon automatically
       metadata: {
         plan: plan,
         cycle: cycle,
