@@ -419,8 +419,8 @@ export default function LandingPage() {
                 </Button>
                 <p className="text-center text-slate-500 text-xs mt-3">
                   {billingCycle === 'yearly' 
-                    ? 'Renews at $499/year after 12 months. Cancel anytime.' 
-                    : 'Renews at $49.99/mo after 12 months. Cancel anytime.'}
+                    ? 'No contract. Renews at $499/year after 12 months. Cancel anytime.' 
+                    : 'No contract. Renews at $49.99/mo after 12 months. Cancel anytime.'}
                 </p>
               </CardContent>
             </Card>
@@ -477,8 +477,8 @@ export default function LandingPage() {
                 </Button>
                 <p className="text-center text-slate-400 text-xs mt-3">
                   {billingCycle === 'yearly' 
-                    ? 'Renews at $1,299/year after 12 months. Cancel anytime.' 
-                    : 'Renews at $109.99/mo after 12 months. Cancel anytime.'}
+                    ? 'No contract. Renews at $1,299/year after 12 months. Cancel anytime.' 
+                    : 'No contract. Renews at $109.99/mo after 12 months. Cancel anytime.'}
                 </p>
                 
                 <button 
@@ -507,7 +507,7 @@ export default function LandingPage() {
             <div className="grid sm:grid-cols-2 gap-4">
               {[
                 { icon: BadgeCheck, text: "30-Day Money-Back Guarantee" },
-                { icon: CheckCircle2, text: "Cancel Anytime" },
+                { icon: CheckCircle2, text: "No Contract — Cancel Anytime" },
                 { icon: Shield, text: "No Hidden Fees" },
                 { icon: DollarSign, text: "No Per-Lead Charges — Ever" },
               ].map((item, i) => (
