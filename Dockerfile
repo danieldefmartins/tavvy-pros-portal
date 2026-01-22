@@ -3,6 +3,16 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# Define build arguments for Vite environment variables
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+ARG VITE_OAUTH_PORTAL_URL
+
+# Set them as environment variables for the build
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+ENV VITE_OAUTH_PORTAL_URL=$VITE_OAUTH_PORTAL_URL
+
 # Install pnpm globally
 RUN npm install -g pnpm@10.4.1
 
