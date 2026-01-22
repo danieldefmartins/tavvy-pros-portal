@@ -1,4 +1,4 @@
-# Build stage
+# Build stage - cache bust v2
 FROM node:22-alpine AS builder
 
 WORKDIR /app
