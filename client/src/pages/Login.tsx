@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { signInWithEmail } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,28 +15,54 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      // First, sign in via Supabase client-side to establish session
+      const { data, error: supabaseError } = await signInWithEmail(email, password);
+      
+      if (supabaseError) {
+        toast({
+          title: "Login failed",
+          description: supabaseError.message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      if (!data.user || !data.session) {
+        toast({
+          title: "Login failed",
+          description: "Invalid credentials",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Success - Supabase session is now established
       toast({
         title: "Welcome back!",
         description: "You have been logged in successfully.",
       });
+      
+      // Invalidate tRPC cache and redirect to dashboard
       utils.auth.me.invalidate();
-      setLocation("/");
-    },
-    onError: (error) => {
+      setLocation("/dashboard");
+    } catch (err) {
       toast({
         title: "Login failed",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
-    },
-  });
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    loginMutation.mutate({ email, password });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -90,12 +117,20 @@ export default function Login() {
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold"
-              disabled={loginMutation.isPending}
+              disabled={isLoading}
             >
-              {loginMutation.isPending ? "Signing in..." : "Sign In"}
+              {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
-          <p className="mt-6 text-center text-xs text-slate-500">
+          <div className="mt-4 text-center">
+            <a 
+              href="/forgot-password" 
+              className="text-sm text-orange-400 hover:text-orange-300 hover:underline"
+            >
+              Forgot your password?
+            </a>
+          </div>
+          <p className="mt-4 text-center text-xs text-slate-500">
             Need an account? Contact Tavvy support.
           </p>
         </CardContent>
