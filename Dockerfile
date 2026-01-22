@@ -16,6 +16,9 @@ ENV VITE_OAUTH_PORTAL_URL=$VITE_OAUTH_PORTAL_URL
 # Install pnpm globally
 RUN npm install -g pnpm@10.4.1
 
+# Cache bust - forces rebuild when this value changes
+ARG CACHEBUST=1
+
 # Copy package files first for better caching
 COPY package.json ./
 COPY pnpm-lock.yaml ./
