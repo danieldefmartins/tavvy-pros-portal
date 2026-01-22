@@ -153,7 +153,7 @@ export default function Signup() {
             }`}>
               {selectedPlan === 'pro_plus' && <Crown className="h-4 w-4" />}
               <span className="font-semibold">
-                {selectedPlan === 'pro_plus' ? 'Pro+ Plan - $499/year' : 'Pro Plan - $99/year'}
+                {selectedPlan === 'pro_plus' ? 'Pro+ Plan - $499 first year' : 'Pro Plan - $99 first year'}
               </span>
             </div>
 
@@ -303,10 +303,11 @@ export default function Signup() {
             </div>
             
             <h3 className="text-xl font-bold text-slate-900 mb-1">Pro</h3>
-            <div className="flex items-baseline gap-1 mb-4">
+            <div className="flex items-baseline gap-1 mb-2">
               <span className="text-4xl font-bold text-slate-900">$99</span>
-              <span className="text-slate-500">/year</span>
+              <span className="text-slate-500">/first year</span>
             </div>
+            <p className="text-xs text-slate-500 mb-4">Then $499/year</p>
             
             <div className="space-y-2">
               {proFeatures.map((feature, i) => (
@@ -340,10 +341,11 @@ export default function Signup() {
             </div>
             
             <h3 className="text-xl font-bold text-white mb-1">Pro+</h3>
-            <div className="flex items-baseline gap-1 mb-4">
+            <div className="flex items-baseline gap-1 mb-2">
               <span className="text-4xl font-bold text-white">$499</span>
-              <span className="text-slate-400">/year</span>
+              <span className="text-slate-400">/first year</span>
             </div>
+            <p className="text-xs text-slate-400 mb-4">Then $1,299/year</p>
             
             <div className="space-y-2">
               {proPlusFeatures.map((feature, i) => (
@@ -370,7 +372,7 @@ export default function Signup() {
               window.location.href = `/?checkout=${selectedPlan}`;
             }}
           >
-            Continue with {selectedPlan === 'pro_plus' ? 'Pro+' : 'Pro'} - ${selectedPlan === 'pro_plus' ? '499' : '99'}/year
+            Continue with {selectedPlan === 'pro_plus' ? 'Pro+' : 'Pro'} - ${selectedPlan === 'pro_plus' ? '499' : '99'} first year
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
           
