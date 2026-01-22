@@ -241,9 +241,9 @@ export default function ProsDashboard() {
               <CardContent>
                 <div className="text-center py-4">
                   <Badge className="bg-green-500 mb-2">Active</Badge>
-                  <p className="text-2xl font-bold text-gray-900">$99/year</p>
-                  <p className="text-sm text-gray-500">Launch Special</p>
-                  <p className="text-xs text-gray-400 mt-2">Renews Jan 15, 2027</p>
+                  <p className="text-2xl font-bold text-gray-900">$99</p>
+                  <p className="text-sm text-gray-500">Founding Pro Rate</p>
+                  <p className="text-xs text-gray-400 mt-2">First year pricing • Then $499/year</p>
                 </div>
               </CardContent>
             </Card>
