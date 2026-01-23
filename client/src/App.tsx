@@ -13,6 +13,7 @@ import Onboarding from "./pages/Onboarding";
 import ProsDashboard from "./pages/ProsDashboard";
 import DigitalCardEditor from "./pages/DigitalCardEditor";
 import PublicProCard from "./pages/PublicProCard";
+import MessagesPage from "./pages/MessagesPage";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -102,6 +103,11 @@ function Router() {
       <Route path="/dashboard">
         <ProtectedRoute>
           <ProsDashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/messages">
+        <ProtectedRoute>
+          <MessagesPage />
         </ProtectedRoute>
       </Route>
       <Route path="/digital-card">
