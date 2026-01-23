@@ -11,6 +11,8 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Onboarding from "./pages/Onboarding";
 import ProsDashboard from "./pages/ProsDashboard";
+import DigitalCardEditor from "./pages/DigitalCardEditor";
+import PublicProCard from "./pages/PublicProCard";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -102,7 +104,17 @@ function Router() {
           <ProsDashboard />
         </ProtectedRoute>
       </Route>
+      <Route path="/digital-card">
+        <ProtectedRoute>
+          <DigitalCardEditor />
+        </ProtectedRoute>
+      </Route>
       
+      {/* Public Pro Card - No auth required */}
+      <Route path="/pro/:slug">
+        <PublicProCard />
+      </Route>
+
       {/* 404 */}
       <Route>
         <NotFound />

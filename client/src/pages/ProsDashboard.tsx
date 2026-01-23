@@ -13,11 +13,15 @@ import {
   Phone,
   Mail,
   Edit,
-  ExternalLink
+  ExternalLink,
+  CreditCard,
+  Share2
 } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function ProsDashboard() {
   const { user } = useSupabaseAuth();
+  const [, setLocation] = useLocation();
   const [profileComplete] = useState(75); // Percentage of profile completion
 
   // Mock data - replace with actual data from API
@@ -215,6 +219,13 @@ export default function ProsDashboard() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                <Button 
+                  className="w-full justify-start bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600" 
+                  onClick={() => setLocation('/digital-card')}
+                >
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Digital Business Card
+                </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Business Profile
