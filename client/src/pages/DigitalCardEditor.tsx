@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,9 +26,18 @@ import {
   Briefcase,
   Check,
   X,
-  ChevronDown
+  ChevronDown,
+  Loader2,
+  ExternalLink,
+  Copy
 } from "lucide-react";
 import { useLocation } from "wouter";
+import { createClient } from "@supabase/supabase-js";
+
+// Initialize Supabase client
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://scasgwrikoqdwlwlwcff.supabase.co";
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjYXNnd3Jpa29xZHdsd2x3Y2ZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5ODUxODEsImV4cCI6MjA4MjU2MTE4MX0.83ARHv2Zj6oJpbojPCIT0ljL8Ze2JqMBztLVueGXXhs";
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Predefined gradient presets
 const GRADIENT_PRESETS = [
@@ -53,32 +62,41 @@ const AVAILABLE_TABS = [
 
 // Social media options
 const SOCIAL_OPTIONS = [
-  { id: 'instagram', name: 'Instagram', icon: Instagram, placeholder: 'instagram.com/username' },
-  { id: 'facebook', name: 'Facebook', icon: Facebook, placeholder: 'facebook.com/page' },
+  { id: 'instagram', name: 'Instagram', icon: Instagram, placeholder: 'username (without @)' },
+  { id: 'facebook', name: 'Facebook', icon: Facebook, placeholder: 'page name or URL' },
   { id: 'website', name: 'Website', icon: Globe, placeholder: 'www.yourwebsite.com' },
-  { id: 'tiktok', name: 'TikTok', icon: Globe, placeholder: 'tiktok.com/@username' },
-  { id: 'youtube', name: 'YouTube', icon: Globe, placeholder: 'youtube.com/@channel' },
-  { id: 'linkedin', name: 'LinkedIn', icon: Globe, placeholder: 'linkedin.com/company/name' },
+  { id: 'tiktok', name: 'TikTok', icon: Globe, placeholder: '@username' },
 ];
 
 interface CardData {
+  id?: string;
+  slug: string;
   companyName: string;
   tagline: string;
   phone: string;
   email: string;
   city: string;
+  state: string;
   category: string;
   profilePhoto: string | null;
   logoPhoto: string | null;
-  gradientPreset: string;
-  customGradientStart: string;
-  customGradientEnd: string;
-  useCustomGradient: boolean;
+  gradientColor1: string;
+  gradientColor2: string;
   enabledTabs: string[];
   socialLinks: { [key: string]: string };
   services: string[];
   aboutText: string;
+  isPublished: boolean;
 }
+
+// Generate slug from company name
+const generateSlug = (name: string): string => {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .substring(0, 50);
+};
 
 export default function DigitalCardEditor() {
   const [, setLocation] = useLocation();
@@ -86,46 +104,120 @@ export default function DigitalCardEditor() {
   const profilePhotoRef = useRef<HTMLInputElement>(null);
   const logoPhotoRef = useRef<HTMLInputElement>(null);
   
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [cardExists, setCardExists] = useState(false);
+  const [copied, setCopied] = useState(false);
+  
   const [cardData, setCardData] = useState<CardData>({
-    companyName: "Martinez Plumbing",
-    tagline: "Your Trusted Local Plumber",
-    phone: "(555) 123-4567",
-    email: "contact@martinezplumbing.com",
-    city: "Orlando, FL",
-    category: "Plumber",
+    slug: '',
+    companyName: '',
+    tagline: '',
+    phone: '',
+    email: '',
+    city: '',
+    state: '',
+    category: '',
     profilePhoto: null,
     logoPhoto: null,
-    gradientPreset: 'purple-indigo',
-    customGradientStart: '#8B5CF6',
-    customGradientEnd: '#6366F1',
-    useCustomGradient: false,
+    gradientColor1: '#8B5CF6',
+    gradientColor2: '#6366F1',
     enabledTabs: ['contact', 'services'],
     socialLinks: {
       instagram: '',
       facebook: '',
       website: '',
+      tiktok: '',
     },
-    services: ['Leak Repair', 'Water Heater', 'Drain Cleaning'],
+    services: [],
     aboutText: '',
+    isPublished: false,
   });
 
   const [activePreviewTab, setActivePreviewTab] = useState('contact');
   const [showColorPicker, setShowColorPicker] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [newService, setNewService] = useState('');
+
+  // Load existing card data on mount
+  useEffect(() => {
+    const loadCardData = async () => {
+      if (!user?.id) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('pro_cards')
+          .select('*')
+          .eq('pro_id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error loading card:', error);
+        }
+
+        if (data) {
+          setCardExists(true);
+          setCardData({
+            id: data.id,
+            slug: data.slug || '',
+            companyName: data.company_name || '',
+            tagline: data.tagline || '',
+            phone: data.phone || '',
+            email: data.email || '',
+            city: data.city || '',
+            state: data.state || '',
+            category: data.category || '',
+            profilePhoto: data.profile_photo_url || null,
+            logoPhoto: data.logo_url || null,
+            gradientColor1: data.gradient_color_1 || '#8B5CF6',
+            gradientColor2: data.gradient_color_2 || '#6366F1',
+            enabledTabs: data.enabled_tabs || ['contact', 'services'],
+            socialLinks: {
+              instagram: data.social_instagram || '',
+              facebook: data.social_facebook || '',
+              website: data.social_website || '',
+              tiktok: data.social_tiktok || '',
+            },
+            services: data.services || [],
+            aboutText: data.about_text || '',
+            isPublished: data.is_published || false,
+          });
+        }
+      } catch (err) {
+        console.error('Error:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCardData();
+  }, [user?.id]);
+
+  // Auto-generate slug when company name changes
+  useEffect(() => {
+    if (!cardExists && cardData.companyName) {
+      setCardData(prev => ({
+        ...prev,
+        slug: generateSlug(prev.companyName)
+      }));
+    }
+  }, [cardData.companyName, cardExists]);
 
   // Get current gradient
   const getCurrentGradient = () => {
-    if (cardData.useCustomGradient) {
-      return `linear-gradient(135deg, ${cardData.customGradientStart}, ${cardData.customGradientEnd})`;
-    }
-    const preset = GRADIENT_PRESETS.find(p => p.id === cardData.gradientPreset);
-    return preset?.preview || GRADIENT_PRESETS[0].preview;
+    return `linear-gradient(135deg, ${cardData.gradientColor1}, ${cardData.gradientColor2})`;
   };
 
   // Handle photo upload
-  const handlePhotoUpload = (type: 'profile' | 'logo') => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = (type: 'profile' | 'logo') => async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file || !user?.id) return;
+
+    try {
+      // For now, convert to base64 (in production, upload to Supabase Storage)
       const reader = new FileReader();
       reader.onloadend = () => {
         setCardData(prev => ({
@@ -134,6 +226,8 @@ export default function DigitalCardEditor() {
         }));
       };
       reader.readAsDataURL(file);
+    } catch (err) {
+      console.error('Upload error:', err);
     }
   };
 
@@ -161,13 +255,148 @@ export default function DigitalCardEditor() {
     }));
   };
 
-  // Save card
-  const handleSave = async () => {
-    setIsSaving(true);
-    // TODO: Save to Supabase
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsSaving(false);
+  // Add service
+  const addService = () => {
+    if (newService.trim() && cardData.services.length < 10) {
+      setCardData(prev => ({
+        ...prev,
+        services: [...prev.services, newService.trim()]
+      }));
+      setNewService('');
+    }
   };
+
+  // Remove service
+  const removeService = (index: number) => {
+    setCardData(prev => ({
+      ...prev,
+      services: prev.services.filter((_, i) => i !== index)
+    }));
+  };
+
+  // Apply gradient preset
+  const applyGradientPreset = (preset: typeof GRADIENT_PRESETS[0]) => {
+    setCardData(prev => ({
+      ...prev,
+      gradientColor1: preset.colors[0],
+      gradientColor2: preset.colors[1]
+    }));
+  };
+
+  // Save card to database
+  const handleSave = async () => {
+    if (!user?.id) {
+      setSaveMessage({ type: 'error', text: 'You must be logged in to save' });
+      return;
+    }
+
+    if (!cardData.companyName.trim()) {
+      setSaveMessage({ type: 'error', text: 'Company name is required' });
+      return;
+    }
+
+    if (!cardData.slug.trim()) {
+      setSaveMessage({ type: 'error', text: 'Card URL slug is required' });
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveMessage(null);
+
+    try {
+      const cardPayload = {
+        pro_id: user.id,
+        slug: cardData.slug,
+        company_name: cardData.companyName,
+        tagline: cardData.tagline,
+        phone: cardData.phone,
+        email: cardData.email,
+        city: cardData.city,
+        state: cardData.state,
+        category: cardData.category,
+        gradient_color_1: cardData.gradientColor1,
+        gradient_color_2: cardData.gradientColor2,
+        profile_photo_url: cardData.profilePhoto,
+        logo_url: cardData.logoPhoto,
+        enabled_tabs: cardData.enabledTabs,
+        services: cardData.services,
+        social_instagram: cardData.socialLinks.instagram,
+        social_facebook: cardData.socialLinks.facebook,
+        social_website: cardData.socialLinks.website,
+        social_tiktok: cardData.socialLinks.tiktok,
+        about_text: cardData.aboutText,
+        is_published: cardData.isPublished,
+        updated_at: new Date().toISOString(),
+      };
+
+      let result;
+      if (cardExists && cardData.id) {
+        // Update existing card
+        result = await supabase
+          .from('pro_cards')
+          .update(cardPayload)
+          .eq('id', cardData.id)
+          .select()
+          .single();
+      } else {
+        // Create new card
+        result = await supabase
+          .from('pro_cards')
+          .insert(cardPayload)
+          .select()
+          .single();
+      }
+
+      if (result.error) {
+        if (result.error.code === '23505') {
+          setSaveMessage({ type: 'error', text: 'This URL slug is already taken. Please choose another.' });
+        } else {
+          throw result.error;
+        }
+      } else {
+        setCardExists(true);
+        setCardData(prev => ({ ...prev, id: result.data.id }));
+        setSaveMessage({ type: 'success', text: 'Card saved successfully!' });
+      }
+    } catch (err: any) {
+      console.error('Save error:', err);
+      setSaveMessage({ type: 'error', text: err.message || 'Failed to save card' });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Toggle publish status
+  const togglePublish = async () => {
+    const newStatus = !cardData.isPublished;
+    setCardData(prev => ({ ...prev, isPublished: newStatus }));
+    
+    if (cardExists && cardData.id) {
+      await supabase
+        .from('pro_cards')
+        .update({ is_published: newStatus })
+        .eq('id', cardData.id);
+    }
+  };
+
+  // Copy card URL
+  const copyCardUrl = () => {
+    const url = `${window.location.origin}/pro/${cardData.slug}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Get card URL
+  const getCardUrl = () => `${window.location.origin}/pro/${cardData.slug}`;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#f9f7f2] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f9f7f2]">
@@ -190,27 +419,85 @@ export default function DigitalCardEditor() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
-              <Eye className="h-4 w-4 mr-2" />
-              Preview
-            </Button>
+            {cardData.slug && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-white/20 text-white hover:bg-white/10"
+                onClick={() => window.open(getCardUrl(), '_blank')}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                View Live
+              </Button>
+            )}
             <Button 
               size="sm" 
               className="bg-orange-500 hover:bg-orange-600"
               onClick={handleSave}
               disabled={isSaving}
             >
-              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
               {isSaving ? 'Saving...' : 'Save Card'}
             </Button>
           </div>
         </div>
       </header>
 
+      {/* Save Message */}
+      {saveMessage && (
+        <div className={`py-2 px-4 text-center text-sm ${
+          saveMessage.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+        }`}>
+          {saveMessage.text}
+        </div>
+      )}
+
       <main className="container mx-auto py-8 px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Editor */}
           <div className="space-y-6">
+            {/* Card URL & Publish Status */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Card Settings</CardTitle>
+                <CardDescription>Your card URL and visibility</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="slug">Card URL</Label>
+                  <div className="flex gap-2 mt-1">
+                    <div className="flex-1 flex items-center bg-gray-100 rounded-md px-3 text-sm text-gray-600">
+                      <span className="truncate">{window.location.origin}/pro/</span>
+                    </div>
+                    <Input 
+                      id="slug"
+                      value={cardData.slug}
+                      onChange={(e) => setCardData(prev => ({ ...prev, slug: generateSlug(e.target.value) }))}
+                      className="flex-1"
+                      placeholder="your-business-name"
+                    />
+                    <Button variant="outline" size="icon" onClick={copyCardUrl}>
+                      {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Publish Card</Label>
+                    <p className="text-sm text-gray-500">Make your card visible to everyone</p>
+                  </div>
+                  <Switch 
+                    checked={cardData.isPublished}
+                    onCheckedChange={togglePublish}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Basic Info */}
             <Card>
               <CardHeader>
@@ -220,11 +507,12 @@ export default function DigitalCardEditor() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="companyName">Company Name</Label>
+                    <Label htmlFor="companyName">Company Name *</Label>
                     <Input 
                       id="companyName"
                       value={cardData.companyName}
                       onChange={(e) => setCardData(prev => ({ ...prev, companyName: e.target.value }))}
+                      placeholder="Martinez Plumbing"
                     />
                   </div>
                   <div>
@@ -233,6 +521,7 @@ export default function DigitalCardEditor() {
                       id="category"
                       value={cardData.category}
                       onChange={(e) => setCardData(prev => ({ ...prev, category: e.target.value }))}
+                      placeholder="Plumber"
                     />
                   </div>
                 </div>
@@ -252,6 +541,7 @@ export default function DigitalCardEditor() {
                       id="phone"
                       value={cardData.phone}
                       onChange={(e) => setCardData(prev => ({ ...prev, phone: e.target.value }))}
+                      placeholder="(555) 123-4567"
                     />
                   </div>
                   <div>
@@ -261,17 +551,29 @@ export default function DigitalCardEditor() {
                       type="email"
                       value={cardData.email}
                       onChange={(e) => setCardData(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="contact@business.com"
                     />
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="city">City</Label>
-                  <Input 
-                    id="city"
-                    value={cardData.city}
-                    onChange={(e) => setCardData(prev => ({ ...prev, city: e.target.value }))}
-                    placeholder="Orlando, FL"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="city">City</Label>
+                    <Input 
+                      id="city"
+                      value={cardData.city}
+                      onChange={(e) => setCardData(prev => ({ ...prev, city: e.target.value }))}
+                      placeholder="Orlando"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="state">State</Label>
+                    <Input 
+                      id="state"
+                      value={cardData.state}
+                      onChange={(e) => setCardData(prev => ({ ...prev, state: e.target.value }))}
+                      placeholder="FL"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -280,66 +582,63 @@ export default function DigitalCardEditor() {
             <Card>
               <CardHeader>
                 <CardTitle>Photos</CardTitle>
-                <CardDescription>Upload your profile photo and logo</CardDescription>
+                <CardDescription>Add your profile photo and logo</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-6">
-                  {/* Profile Photo */}
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="mb-2 block">Profile Photo</Label>
+                    <Label>Profile Photo</Label>
+                    <input
+                      type="file"
+                      ref={profilePhotoRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handlePhotoUpload('profile')}
+                    />
                     <div 
-                      className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-orange-500 transition-colors"
+                      className="mt-2 border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors"
                       onClick={() => profilePhotoRef.current?.click()}
                     >
                       {cardData.profilePhoto ? (
                         <img 
                           src={cardData.profilePhoto} 
                           alt="Profile" 
-                          className="w-24 h-24 rounded-full mx-auto object-cover"
+                          className="w-20 h-20 rounded-full mx-auto object-cover"
                         />
                       ) : (
-                        <div className="py-4">
-                          <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                          <p className="text-sm text-gray-500">Click to upload</p>
-                        </div>
+                        <>
+                          <Upload className="h-8 w-8 mx-auto text-gray-400" />
+                          <p className="text-sm text-gray-500 mt-2">Click to upload</p>
+                        </>
                       )}
                     </div>
-                    <input 
-                      ref={profilePhotoRef}
-                      type="file" 
-                      accept="image/*" 
-                      className="hidden"
-                      onChange={handlePhotoUpload('profile')}
-                    />
                   </div>
-
-                  {/* Logo */}
                   <div>
-                    <Label className="mb-2 block">Company Logo</Label>
+                    <Label>Logo</Label>
+                    <input
+                      type="file"
+                      ref={logoPhotoRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handlePhotoUpload('logo')}
+                    />
                     <div 
-                      className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-orange-500 transition-colors"
+                      className="mt-2 border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition-colors"
                       onClick={() => logoPhotoRef.current?.click()}
                     >
                       {cardData.logoPhoto ? (
                         <img 
                           src={cardData.logoPhoto} 
                           alt="Logo" 
-                          className="w-24 h-24 mx-auto object-contain"
+                          className="w-20 h-20 mx-auto object-contain"
                         />
                       ) : (
-                        <div className="py-4">
-                          <ImageIcon className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                          <p className="text-sm text-gray-500">Click to upload</p>
-                        </div>
+                        <>
+                          <ImageIcon className="h-8 w-8 mx-auto text-gray-400" />
+                          <p className="text-sm text-gray-500 mt-2">Click to upload</p>
+                        </>
                       )}
                     </div>
-                    <input 
-                      ref={logoPhotoRef}
-                      type="file" 
-                      accept="image/*" 
-                      className="hidden"
-                      onChange={handlePhotoUpload('logo')}
-                    />
                   </div>
                 </div>
               </CardContent>
@@ -348,83 +647,59 @@ export default function DigitalCardEditor() {
             {/* Colors */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Palette className="h-5 w-5" />
-                  Card Colors
-                </CardTitle>
+                <CardTitle>Card Colors</CardTitle>
                 <CardDescription>Choose your card's gradient colors</CardDescription>
               </CardHeader>
-              <CardContent>
-                {/* Preset Gradients */}
-                <div className="grid grid-cols-4 gap-3 mb-4">
-                  {GRADIENT_PRESETS.map((preset) => (
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-4 gap-2">
+                  {GRADIENT_PRESETS.map(preset => (
                     <button
                       key={preset.id}
-                      className={`h-16 rounded-lg transition-all ${
-                        cardData.gradientPreset === preset.id && !cardData.useCustomGradient
+                      className={`h-12 rounded-lg transition-all ${
+                        cardData.gradientColor1 === preset.colors[0] && cardData.gradientColor2 === preset.colors[1]
                           ? 'ring-2 ring-orange-500 ring-offset-2'
-                          : 'hover:scale-105'
+                          : ''
                       }`}
                       style={{ background: preset.preview }}
-                      onClick={() => setCardData(prev => ({ 
-                        ...prev, 
-                        gradientPreset: preset.id,
-                        useCustomGradient: false 
-                      }))}
+                      onClick={() => applyGradientPreset(preset)}
                       title={preset.name}
                     />
                   ))}
                 </div>
-
-                {/* Custom Colors Toggle */}
-                <div className="flex items-center justify-between py-3 border-t">
-                  <div>
-                    <p className="font-medium text-sm">Use Custom Colors</p>
-                    <p className="text-xs text-gray-500">Pick your own gradient colors</p>
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <Label>Primary Color</Label>
+                    <div className="flex gap-2 mt-1">
+                      <input
+                        type="color"
+                        value={cardData.gradientColor1}
+                        onChange={(e) => setCardData(prev => ({ ...prev, gradientColor1: e.target.value }))}
+                        className="w-10 h-10 rounded cursor-pointer"
+                      />
+                      <Input 
+                        value={cardData.gradientColor1}
+                        onChange={(e) => setCardData(prev => ({ ...prev, gradientColor1: e.target.value }))}
+                        className="flex-1"
+                      />
+                    </div>
                   </div>
-                  <Switch 
-                    checked={cardData.useCustomGradient}
-                    onCheckedChange={(checked) => setCardData(prev => ({ ...prev, useCustomGradient: checked }))}
-                  />
+                  <div className="flex-1">
+                    <Label>Secondary Color</Label>
+                    <div className="flex gap-2 mt-1">
+                      <input
+                        type="color"
+                        value={cardData.gradientColor2}
+                        onChange={(e) => setCardData(prev => ({ ...prev, gradientColor2: e.target.value }))}
+                        className="w-10 h-10 rounded cursor-pointer"
+                      />
+                      <Input 
+                        value={cardData.gradientColor2}
+                        onChange={(e) => setCardData(prev => ({ ...prev, gradientColor2: e.target.value }))}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
                 </div>
-
-                {/* Custom Color Pickers */}
-                {cardData.useCustomGradient && (
-                  <div className="grid grid-cols-2 gap-4 pt-3">
-                    <div>
-                      <Label className="text-xs">Start Color</Label>
-                      <div className="flex items-center gap-2 mt-1">
-                        <input 
-                          type="color" 
-                          value={cardData.customGradientStart}
-                          onChange={(e) => setCardData(prev => ({ ...prev, customGradientStart: e.target.value }))}
-                          className="w-10 h-10 rounded cursor-pointer"
-                        />
-                        <Input 
-                          value={cardData.customGradientStart}
-                          onChange={(e) => setCardData(prev => ({ ...prev, customGradientStart: e.target.value }))}
-                          className="flex-1 text-xs"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label className="text-xs">End Color</Label>
-                      <div className="flex items-center gap-2 mt-1">
-                        <input 
-                          type="color" 
-                          value={cardData.customGradientEnd}
-                          onChange={(e) => setCardData(prev => ({ ...prev, customGradientEnd: e.target.value }))}
-                          className="w-10 h-10 rounded cursor-pointer"
-                        />
-                        <Input 
-                          value={cardData.customGradientEnd}
-                          onChange={(e) => setCardData(prev => ({ ...prev, customGradientEnd: e.target.value }))}
-                          className="flex-1 text-xs"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
@@ -432,28 +707,26 @@ export default function DigitalCardEditor() {
             <Card>
               <CardHeader>
                 <CardTitle>Card Tabs</CardTitle>
-                <CardDescription>Choose up to 2 tabs to display on your card</CardDescription>
+                <CardDescription>Choose which tabs to show (max 2)</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {AVAILABLE_TABS.map((tab) => {
-                    const isEnabled = cardData.enabledTabs.includes(tab.id);
+                <div className="space-y-2">
+                  {AVAILABLE_TABS.map(tab => {
                     const Icon = tab.icon;
+                    const isEnabled = cardData.enabledTabs.includes(tab.id);
                     return (
                       <div 
                         key={tab.id}
-                        className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
-                          isEnabled ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'
+                        className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                          isEnabled ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:bg-gray-50'
                         }`}
                         onClick={() => toggleTab(tab.id)}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-lg ${isEnabled ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
-                            <Icon className="h-4 w-4" />
-                          </div>
+                          <Icon className={`h-5 w-5 ${isEnabled ? 'text-orange-500' : 'text-gray-400'}`} />
                           <div>
-                            <p className="font-medium text-sm">{tab.name}</p>
-                            <p className="text-xs text-gray-500">{tab.description}</p>
+                            <p className="font-medium">{tab.name}</p>
+                            <p className="text-sm text-gray-500">{tab.description}</p>
                           </div>
                         </div>
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
@@ -468,108 +741,137 @@ export default function DigitalCardEditor() {
               </CardContent>
             </Card>
 
+            {/* Services */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Services</CardTitle>
+                <CardDescription>List the services you offer</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-2">
+                  <Input 
+                    value={newService}
+                    onChange={(e) => setNewService(e.target.value)}
+                    placeholder="Add a service..."
+                    onKeyPress={(e) => e.key === 'Enter' && addService()}
+                  />
+                  <Button onClick={addService} disabled={!newService.trim()}>Add</Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {cardData.services.map((service, index) => (
+                    <div 
+                      key={index}
+                      className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full"
+                    >
+                      <span className="text-sm">{service}</span>
+                      <button 
+                        onClick={() => removeService(index)}
+                        className="text-gray-400 hover:text-red-500"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Social Links */}
             <Card>
               <CardHeader>
                 <CardTitle>Social Links</CardTitle>
-                <CardDescription>Add up to 3 social media links (plus Tavvy profile)</CardDescription>
+                <CardDescription>Add your social media profiles</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {SOCIAL_OPTIONS.slice(0, 3).map((social) => {
+                {SOCIAL_OPTIONS.map(social => {
                   const Icon = social.icon;
                   return (
                     <div key={social.id} className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-gray-100">
-                        <Icon className="h-4 w-4 text-gray-600" />
-                      </div>
+                      <Icon className="h-5 w-5 text-gray-400" />
                       <Input 
-                        placeholder={social.placeholder}
                         value={cardData.socialLinks[social.id] || ''}
                         onChange={(e) => updateSocialLink(social.id, e.target.value)}
-                        className="flex-1"
+                        placeholder={social.placeholder}
                       />
                     </div>
                   );
                 })}
-                <p className="text-xs text-gray-500 pt-2">
-                  Your Tavvy profile and Portfolio links are automatically included.
-                </p>
+              </CardContent>
+            </Card>
+
+            {/* About */}
+            <Card>
+              <CardHeader>
+                <CardTitle>About</CardTitle>
+                <CardDescription>Tell customers about your business</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Textarea 
+                  value={cardData.aboutText}
+                  onChange={(e) => setCardData(prev => ({ ...prev, aboutText: e.target.value }))}
+                  placeholder="Write a brief description of your business..."
+                  rows={4}
+                />
               </CardContent>
             </Card>
           </div>
 
           {/* Right Column - Preview */}
           <div className="lg:sticky lg:top-8 h-fit">
-            <Card className="overflow-hidden">
-              <CardHeader className="bg-gray-50 border-b">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Card Preview</CardTitle>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <QrCode className="h-4 w-4 mr-2" />
-                      QR Code
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Share2 className="h-4 w-4 mr-2" />
-                      Share
-                    </Button>
-                  </div>
-                </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Live Preview</CardTitle>
+                <CardDescription>See how your card will look</CardDescription>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent>
                 {/* Phone Frame */}
-                <div className="bg-gray-900 p-4 flex justify-center">
-                  <div className="w-[320px] bg-white rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-gray-800">
-                    {/* Phone Notch */}
-                    <div className="bg-gray-800 h-6 flex justify-center items-end pb-1">
-                      <div className="w-20 h-4 bg-black rounded-full" />
-                    </div>
-                    
-                    {/* Card Content */}
-                    <div className="bg-gray-100 min-h-[580px]">
-                      {/* Gradient Header */}
-                      <div 
-                        className="pt-8 pb-6 px-6 text-white"
-                        style={{ background: getCurrentGradient() }}
-                      >
-                        {/* Profile Photo */}
-                        <div className="flex justify-center mb-4">
-                          <div className="w-20 h-20 rounded-full bg-white/20 border-4 border-white/50 overflow-hidden">
-                            {cardData.profilePhoto ? (
-                              <img src={cardData.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-white/50">
-                                <ImageIcon className="h-8 w-8" />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* Company Info */}
-                        <div className="text-center">
-                          <h2 className="text-xl font-bold flex items-center justify-center gap-2">
-                            {cardData.companyName}
-                            <span className="bg-blue-500 rounded-full p-0.5">
-                              <Check className="h-3 w-3" />
-                            </span>
-                          </h2>
-                          <p className="text-white/80 text-sm mt-1">{cardData.tagline}</p>
-                        </div>
+                <div className="mx-auto max-w-[320px] bg-black rounded-[40px] p-3 shadow-xl">
+                  <div className="bg-white rounded-[32px] overflow-hidden">
+                    {/* Gradient Header */}
+                    <div 
+                      className="p-6 text-center text-white"
+                      style={{ background: getCurrentGradient() }}
+                    >
+                      {/* Tavvy Badge */}
+                      <div className="flex justify-end mb-2">
+                        <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Tavvy Pro</span>
                       </div>
+                      
+                      {/* Profile Photo */}
+                      <div className="w-20 h-20 mx-auto mb-3 rounded-full border-4 border-white/30 overflow-hidden bg-white/20">
+                        {cardData.profilePhoto ? (
+                          <img src={cardData.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-3xl">👤</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Company Info */}
+                      <h3 className="font-bold text-lg">{cardData.companyName || 'Company Name'}</h3>
+                      <p className="text-sm opacity-80">{cardData.tagline || 'Your tagline here'}</p>
+                      <p className="text-xs opacity-60 mt-1">
+                        {cardData.category || 'Category'} • {cardData.city || 'City'}{cardData.state ? `, ${cardData.state}` : ''}
+                      </p>
+                    </div>
 
+                    {/* Card Body */}
+                    <div className="p-4">
                       {/* Tabs */}
-                      <div className="bg-white border-b px-4 py-2 flex gap-2">
-                        {cardData.enabledTabs.map((tabId) => {
+                      <div className="flex gap-2 mb-4">
+                        {cardData.enabledTabs.map(tabId => {
                           const tab = AVAILABLE_TABS.find(t => t.id === tabId);
                           if (!tab) return null;
                           return (
                             <button
                               key={tabId}
-                              className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-colors ${
-                                activePreviewTab === tabId
-                                  ? 'bg-blue-500 text-white'
+                              className={`flex-1 py-2 px-3 rounded-full text-sm font-medium transition-colors ${
+                                activePreviewTab === tabId 
+                                  ? 'text-white' 
                                   : 'bg-gray-100 text-gray-600'
                               }`}
+                              style={activePreviewTab === tabId ? { background: cardData.gradientColor1 } : {}}
                               onClick={() => setActivePreviewTab(tabId)}
                             >
                               {tab.name}
@@ -579,97 +881,78 @@ export default function DigitalCardEditor() {
                       </div>
 
                       {/* Tab Content */}
-                      <div className="p-4 space-y-3">
+                      <div className="space-y-2">
                         {activePreviewTab === 'contact' && (
                           <>
-                            <button className="w-full py-3 px-4 bg-slate-800 text-white rounded-full flex items-center justify-center gap-2 text-sm font-medium">
-                              <Phone className="h-4 w-4" />
-                              Call Now
+                            <button className="w-full py-2.5 bg-gray-900 text-white rounded-full text-sm flex items-center justify-center gap-2">
+                              <Phone className="h-4 w-4" /> Call Now
                             </button>
-                            <button className="w-full py-3 px-4 bg-slate-800 text-white rounded-full flex items-center justify-center gap-2 text-sm font-medium">
-                              <MessageSquare className="h-4 w-4" />
-                              Send Text
+                            <button className="w-full py-2.5 bg-gray-900 text-white rounded-full text-sm flex items-center justify-center gap-2">
+                              <MessageSquare className="h-4 w-4" /> Send Text
                             </button>
-                            <button className="w-full py-3 px-4 bg-slate-800 text-white rounded-full flex items-center justify-center gap-2 text-sm font-medium">
-                              <Mail className="h-4 w-4" />
-                              Email
+                            <button className="w-full py-2.5 bg-gray-900 text-white rounded-full text-sm flex items-center justify-center gap-2">
+                              <Mail className="h-4 w-4" /> Email
                             </button>
-                            <button className="w-full py-3 px-4 bg-slate-800 text-white rounded-full flex items-center justify-center gap-2 text-sm font-medium">
-                              <FileText className="h-4 w-4" />
-                              Request Quote
+                            <button className="w-full py-2.5 bg-gray-900 text-white rounded-full text-sm flex items-center justify-center gap-2">
+                              <FileText className="h-4 w-4" /> Request Quote
                             </button>
                           </>
                         )}
                         {activePreviewTab === 'services' && (
                           <div className="space-y-2">
-                            {cardData.services.map((service, i) => (
-                              <div key={i} className="py-3 px-4 bg-gray-50 rounded-lg text-sm text-gray-700">
-                                {service}
-                              </div>
-                            ))}
+                            {cardData.services.length > 0 ? (
+                              cardData.services.map((service, i) => (
+                                <div key={i} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+                                  <span className="text-sm">{service}</span>
+                                  <ChevronDown className="h-4 w-4 text-gray-400 rotate-[-90deg]" />
+                                </div>
+                              ))
+                            ) : (
+                              <p className="text-center text-gray-400 text-sm py-4">No services added yet</p>
+                            )}
                           </div>
                         )}
                       </div>
 
                       {/* Social Links */}
-                      <div className="px-4 py-3 flex justify-center gap-4">
-                        {Object.entries(cardData.socialLinks).map(([key, value]) => {
-                          if (!value) return null;
-                          const social = SOCIAL_OPTIONS.find(s => s.id === key);
-                          if (!social) return null;
-                          const Icon = social.icon;
-                          return (
-                            <div key={key} className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
-                              <Icon className="h-5 w-5 text-white" />
-                            </div>
-                          );
-                        })}
-                        <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
-                          <Globe className="h-5 w-5 text-white" />
-                        </div>
-                        <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
-                          <Briefcase className="h-5 w-5 text-white" />
+                      <div className="flex justify-center gap-2 mt-4 pt-4 border-t">
+                        {cardData.socialLinks.instagram && (
+                          <div className="w-9 h-9 bg-gray-900 rounded-full flex items-center justify-center">
+                            <Instagram className="h-4 w-4 text-white" />
+                          </div>
+                        )}
+                        {cardData.socialLinks.facebook && (
+                          <div className="w-9 h-9 bg-gray-900 rounded-full flex items-center justify-center">
+                            <Facebook className="h-4 w-4 text-white" />
+                          </div>
+                        )}
+                        {cardData.socialLinks.website && (
+                          <div className="w-9 h-9 bg-gray-900 rounded-full flex items-center justify-center">
+                            <Globe className="h-4 w-4 text-white" />
+                          </div>
+                        )}
+                        <div className="w-9 h-9 bg-gray-900 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">T</span>
                         </div>
                       </div>
 
                       {/* Bottom Actions */}
-                      <div className="px-4 pb-6 pt-2 flex gap-3">
-                        <button className="flex-1 py-3 px-4 border-2 border-gray-300 text-gray-700 rounded-full flex items-center justify-center gap-2 text-sm font-medium">
-                          <Share2 className="h-4 w-4" />
-                          Share Card
+                      <div className="flex gap-2 mt-4">
+                        <button className="flex-1 py-2.5 border-2 border-gray-300 rounded-full text-sm flex items-center justify-center gap-2">
+                          <Share2 className="h-4 w-4" /> Share
                         </button>
-                        <button className="flex-1 py-3 px-4 bg-blue-500 text-white rounded-full flex items-center justify-center gap-2 text-sm font-medium">
-                          <Phone className="h-4 w-4" />
-                          Save Contact
+                        <button 
+                          className="flex-1 py-2.5 text-white rounded-full text-sm flex items-center justify-center gap-2"
+                          style={{ background: cardData.gradientColor1 }}
+                        >
+                          <Save className="h-4 w-4" /> Save Contact
                         </button>
-                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <QrCode className="h-6 w-6 text-gray-400" />
-                        </div>
+                        <button className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <QrCode className="h-5 w-5 text-gray-600" />
+                        </button>
                       </div>
                     </div>
-
-                    {/* Phone Home Bar */}
-                    <div className="bg-gray-100 h-6 flex justify-center items-center">
-                      <div className="w-32 h-1 bg-gray-800 rounded-full" />
-                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Card URL */}
-            <Card className="mt-4">
-              <CardContent className="py-4">
-                <Label className="text-xs text-gray-500">Your Card URL</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <Input 
-                    value={`tavvy.com/pro/${cardData.companyName.toLowerCase().replace(/\s+/g, '-')}`}
-                    readOnly
-                    className="bg-gray-50"
-                  />
-                  <Button variant="outline" size="sm">
-                    Copy
-                  </Button>
                 </div>
               </CardContent>
             </Card>
