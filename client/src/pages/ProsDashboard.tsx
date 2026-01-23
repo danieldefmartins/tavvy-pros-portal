@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
+import { useProProfile } from "@/hooks/useProProfile";
 import { 
   User, 
   Star, 
@@ -15,30 +16,41 @@ import {
   Edit,
   ExternalLink,
   CreditCard,
-  Share2
+  LogOut,
+  Loader2,
+  Settings
 } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function ProsDashboard() {
-  const { user } = useSupabaseAuth();
+  const { user, signOut } = useSupabaseAuth();
+  const { profile, loading, getProfileCompletion, getStats } = useProProfile();
   const [, setLocation] = useLocation();
-  const [profileComplete] = useState(75); // Percentage of profile completion
 
-  // Mock data - replace with actual data from API
-  const stats = {
-    totalLeads: 24,
-    activeLeads: 8,
-    responseRate: 92,
-    avgRating: 4.8,
-    reviewCount: 47,
-    profileViews: 156
-  };
+  const profileComplete = getProfileCompletion();
+  const stats = getStats();
 
+  // Mock recent leads - TODO: Fetch from database
   const recentLeads = [
     { id: 1, name: "John D.", service: "Plumbing Repair", location: "Miami, FL", date: "Today", status: "new" },
     { id: 2, name: "Sarah M.", service: "Water Heater", location: "Fort Lauderdale, FL", date: "Yesterday", status: "contacted" },
     { id: 3, name: "Mike R.", service: "Drain Cleaning", location: "Hollywood, FL", date: "2 days ago", status: "completed" },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    setLocation('/');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f9f7f2] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+      </div>
+    );
+  }
+
+  const displayName = profile?.business_name || profile?.first_name || user?.email?.split('@')[0] || 'Pro';
 
   return (
     <div className="min-h-screen bg-[#f9f7f2]">
@@ -50,9 +62,24 @@ export default function ProsDashboard() {
             <span className="text-orange-500 font-semibold">Pros</span>
           </div>
           <div className="flex items-center gap-4">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-white hover:bg-white/10"
+              onClick={() => setLocation('/messages')}
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Messages
+            </Button>
             <span className="text-sm text-gray-300">{user?.email}</span>
-            <Button variant="outline" size="sm" className="border-white/20 text-white hover:bg-white/10">
-              Settings
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="border-white/20 text-white hover:bg-white/10"
+              onClick={handleSignOut}
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
             </Button>
           </div>
         </div>
@@ -61,7 +88,7 @@ export default function ProsDashboard() {
       <main className="container mx-auto py-8 px-4">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Welcome back!</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Welcome back, {displayName}!</h1>
           <p className="text-gray-600 mt-1">Here's what's happening with your Tavvy Pro account.</p>
         </div>
 
@@ -137,7 +164,7 @@ export default function ProsDashboard() {
                   <Phone className="h-6 w-6 text-green-600" />
                 </div>
               </div>
-              <p className="text-xs text-green-600 mt-2">Excellent!</p>
+              <p className="text-xs text-green-600 mt-2">{stats.responseRate >= 80 ? 'Excellent!' : 'Keep improving!'}</p>
             </CardContent>
           </Card>
 
@@ -147,7 +174,7 @@ export default function ProsDashboard() {
                 <div>
                   <p className="text-sm text-gray-500">Rating</p>
                   <div className="flex items-center gap-1">
-                    <p className="text-3xl font-bold text-gray-900">{stats.avgRating}</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats.avgRating.toFixed(1)}</p>
                     <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                   </div>
                 </div>
@@ -178,36 +205,43 @@ export default function ProsDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {recentLeads.map((lead) => (
-                    <div key={lead.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                          <User className="h-5 w-5 text-blue-600" />
+                {recentLeads.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <MessageSquare className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                    <p>No leads yet. Complete your profile to start receiving leads!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {recentLeads.map((lead) => (
+                      <div key={lead.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <User className="h-5 w-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{lead.name}</p>
+                            <p className="text-sm text-gray-500">{lead.service}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{lead.name}</p>
-                          <p className="text-sm text-gray-500">{lead.service}</p>
+                        <div className="text-right">
+                          <div className="flex items-center gap-1 text-sm text-gray-500">
+                            <MapPin className="h-3 w-3" />
+                            {lead.location}
+                          </div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs text-gray-400">{lead.date}</span>
+                            <Badge 
+                              variant={lead.status === "new" ? "default" : lead.status === "contacted" ? "secondary" : "outline"}
+                              className={lead.status === "new" ? "bg-green-500" : ""}
+                            >
+                              {lead.status}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-1 text-sm text-gray-500">
-                          <MapPin className="h-3 w-3" />
-                          {lead.location}
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-gray-400">{lead.date}</span>
-                          <Badge 
-                            variant={lead.status === "new" ? "default" : lead.status === "contacted" ? "secondary" : "outline"}
-                            className={lead.status === "new" ? "bg-green-500" : ""}
-                          >
-                            {lead.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -225,6 +259,14 @@ export default function ProsDashboard() {
                 >
                   <CreditCard className="h-4 w-4 mr-2" />
                   Digital Business Card
+                </Button>
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => setLocation('/messages')}
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Messages
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Edit className="h-4 w-4 mr-2" />
@@ -251,10 +293,18 @@ export default function ProsDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-center py-4">
-                  <Badge className="bg-green-500 mb-2">Active</Badge>
-                  <p className="text-2xl font-bold text-gray-900">$99</p>
-                  <p className="text-sm text-gray-500">Founding Pro Rate</p>
-                  <p className="text-xs text-gray-400 mt-2">First year pricing • Then $499/year</p>
+                  <Badge className={profile?.subscription_status === 'active' ? "bg-green-500" : "bg-gray-500"}>
+                    {profile?.subscription_status || 'Inactive'}
+                  </Badge>
+                  <p className="text-2xl font-bold text-gray-900 mt-2">
+                    {profile?.subscription_plan === 'pro_plus' ? '$499' : '$99'}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {profile?.subscription_plan === 'pro_plus' ? 'Pro+ Plan' : 'Founding Pro Rate'}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    First year pricing • Then {profile?.subscription_plan === 'pro_plus' ? '$1,299' : '$499'}/year
+                  </p>
                 </div>
               </CardContent>
             </Card>
