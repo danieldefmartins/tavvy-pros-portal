@@ -81,24 +81,25 @@ export default function Onboarding() {
     setError(null);
 
     try {
-      // Save business profile to Supabase
+      // Save business profile to Supabase (pro_providers is the single source of truth)
       const { error: profileError } = await supabase
-        .from('pro_profiles')
+        .from('pro_providers')
         .upsert({
           user_id: user?.id,
           business_name: businessName,
           phone,
           website,
-          services: selectedServices,
+          specialties: selectedServices,
           city,
           state,
           zip_code: zipCode,
           service_radius: parseInt(serviceRadius),
           bio,
           years_experience: parseInt(yearsExperience) || 0,
+          provider_type: 'pro',
           is_active: true,
           created_at: new Date().toISOString(),
-        });
+        }, { onConflict: 'user_id' });
 
       if (profileError) {
         console.warn('Profile save warning:', profileError);
