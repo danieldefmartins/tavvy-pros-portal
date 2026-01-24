@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { useProProfile } from "@/hooks/useProProfile";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { NotificationBadge } from "@/components/NotificationBadge";
 import { 
   User, 
   Star, 
@@ -25,6 +27,7 @@ import { useLocation } from "wouter";
 export default function ProsDashboard() {
   const { user, signOut } = useSupabaseAuth();
   const { profile, loading, getProfileCompletion, getStats } = useProProfile();
+  const { unreadCount } = useUnreadMessages();
   const [, setLocation] = useLocation();
 
   const profileComplete = getProfileCompletion();
@@ -65,11 +68,16 @@ export default function ProsDashboard() {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-white hover:bg-white/10"
+              className="text-white hover:bg-white/10 relative"
               onClick={() => setLocation('/messages')}
             >
               <MessageSquare className="h-4 w-4 mr-2" />
               Messages
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </Button>
             <span className="text-sm text-gray-300">{user?.email}</span>
             <Button 
@@ -116,6 +124,26 @@ export default function ProsDashboard() {
                     Edit Profile
                   </Button>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Unread Messages Alert */}
+        {unreadCount > 0 && (
+          <Card className="mb-6 border-red-200 bg-red-50 cursor-pointer hover:bg-red-100 transition-colors" onClick={() => setLocation('/messages')}>
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                    <MessageSquare className="h-5 w-5 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">You have {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}</p>
+                    <p className="text-sm text-gray-600">Click here to view your messages</p>
+                  </div>
+                </div>
+                <NotificationBadge count={unreadCount} size="lg" />
               </div>
             </CardContent>
           </Card>
@@ -261,12 +289,17 @@ export default function ProsDashboard() {
                   Digital Business Card
                 </Button>
                 <Button 
-                  className="w-full justify-start" 
+                  className="w-full justify-between" 
                   variant="outline"
                   onClick={() => setLocation('/messages')}
                 >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Messages
+                  <span className="flex items-center">
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Messages
+                  </span>
+                  {unreadCount > 0 && (
+                    <NotificationBadge count={unreadCount} size="sm" />
+                  )}
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Edit className="h-4 w-4 mr-2" />
