@@ -259,6 +259,12 @@ export default function LandingPage() {
         
         <div className="container mx-auto max-w-4xl relative z-10">
           <div className="text-center">
+            {/* Founding Pro Pricing Badge */}
+            <div className="inline-flex items-center gap-2 bg-orange-500/20 text-orange-600 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-orange-500/30">
+              <Crown className="w-4 h-4" />
+              Founding Pro Pricing
+            </div>
+            
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">
               Stop Buying Leads.<br />
               <span className="text-blue-600">Start Winning Jobs.</span>
