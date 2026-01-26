@@ -400,10 +400,10 @@ export default function LandingPage() {
                 ) : (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-5xl font-bold text-slate-900">$39.99</span>
+                      <span className="text-5xl font-bold text-slate-900">$49.99</span>
                       <span className="text-slate-500">/month</span>
                     </div>
-                    <p className="text-slate-500 text-sm mb-6">First 12 months, then $49.99/mo</p>
+                    <p className="text-slate-500 text-sm mb-6">Then $49.99/mo after first year</p>
                   </>
                 )}
 
@@ -421,12 +421,12 @@ export default function LandingPage() {
                   onClick={() => handleGetStarted('pro', billingCycle)}
                   disabled={isLoading && loadingPlan === `pro_${billingCycle}`}
                 >
-                  {isLoading && loadingPlan === `pro_${billingCycle}` ? 'Processing...' : `Get Pro - ${billingCycle === 'yearly' ? '$199' : '$39.99/mo'}`}
+                  {isLoading && loadingPlan === `pro_${billingCycle}` ? 'Processing...' : `Get Pro - ${billingCycle === 'yearly' ? '$199' : '$49.99/mo'}`}
                 </Button>
                 <p className="text-center text-slate-500 text-xs mt-3">
                   {billingCycle === 'yearly' 
                     ? 'No contract. Renews at $599/year after 12 months. Cancel anytime.' 
-                    : 'No contract. Renews at $49.99/mo after 12 months. Cancel anytime.'}
+                    : 'No contract. Cancel anytime.'}
                 </p>
               </CardContent>
             </Card>
@@ -458,10 +458,10 @@ export default function LandingPage() {
                 ) : (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-5xl font-bold">$59.99</span>
+                      <span className="text-5xl font-bold">$69.99</span>
                       <span className="text-slate-400">/month</span>
                     </div>
-                    <p className="text-slate-400 text-sm mb-6">First 12 months, then $109.99/mo</p>
+                    <p className="text-slate-400 text-sm mb-6">Then $109.99/mo after first year</p>
                   </>
                 )}
 
@@ -479,7 +479,7 @@ export default function LandingPage() {
                   onClick={() => handleGetStarted('pro_plus', billingCycle)}
                   disabled={isLoading && loadingPlan === `pro_plus_${billingCycle}`}
                 >
-                  {isLoading && loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : `Get Pro+ - ${billingCycle === 'yearly' ? '$599' : '$59.99/mo'}`}
+                  {isLoading && loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : `Get Pro+ - ${billingCycle === 'yearly' ? '$599' : '$69.99/mo'}`}
                 </Button>
                 <p className="text-center text-slate-400 text-xs mt-3">
                   {billingCycle === 'yearly' 

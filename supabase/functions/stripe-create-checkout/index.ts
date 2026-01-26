@@ -5,20 +5,14 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   apiVersion: "2023-10-16",
 });
 
-// Price IDs (regular prices - coupons will apply the intro discount)
+// Price IDs - New pricing as of Jan 2026
+// Pro: $199/year (first year), $599/year (renewal) | $49.99/month
+// Pro+: $599/year (first year), $1,299/year (renewal) | $69.99/month
 const PRICE_IDS: Record<string, string> = {
-  pro_yearly: "price_1SnPT2IeV9jtGwIXhcNUzpXD",      // $499/year
-  pro_monthly: "price_1SriqqIeV9jtGwIXlpIqw1L4",     // $49.99/month
-  pro_plus_yearly: "price_1SrP2tIeV9jtGwIXcu7bzEbJ", // $1,299/year
-  pro_plus_monthly: "price_1SritiIeV9jtGwIXg7mr8x7q" // $109.99/month
-};
-
-// Coupon IDs for intro pricing (first 12 months)
-const COUPONS: Record<string, string> = {
-  pro_yearly: "ivjf3mbD",      // $400 off → $99 first year
-  pro_monthly: "6UL8Ic6E",     // $10 off → $39.99/mo first 12 months
-  pro_plus_yearly: "Rd8fTRgK", // $800 off → $499 first year
-  pro_plus_monthly: "T9F6T2Av" // $50 off → $59.99/mo first 12 months
+  pro_yearly: "price_1StuJAIeV9jtGwIXS4bDWgDT",        // $199/year (first year price)
+  pro_monthly: "price_1StuJjIeV9jtGwIXHlQNkJav",       // $49.99/month
+  pro_plus_yearly: "price_1Stu9bIeV9jtGwIXWSN6axQf",   // $599/year (first year price)
+  pro_plus_monthly: "price_1StuBAIeV9jtGwIXnp3T4PLJ"   // $69.99/month
 };
 
 const corsHeaders = {
@@ -36,16 +30,15 @@ serve(async (req) => {
   try {
     const { successUrl, cancelUrl, plan = "pro", cycle = "yearly" } = await req.json();
 
-    // Determine price ID and coupon based on plan and cycle
+    // Determine price ID based on plan and cycle
     const priceKey = `${plan}_${cycle}`;
     const priceId = PRICE_IDS[priceKey];
-    const couponId = COUPONS[priceKey];
 
     if (!priceId) {
       throw new Error(`Invalid plan/cycle combination: ${plan}/${cycle}`);
     }
 
-    // Create checkout session with coupon for intro pricing
+    // Create checkout session
     const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"],
       line_items: [
@@ -68,11 +61,6 @@ serve(async (req) => {
         },
       },
     };
-
-    // Apply coupon if available (for intro pricing)
-    if (couponId) {
-      sessionConfig.discounts = [{ coupon: couponId }];
-    }
 
     const session = await stripe.checkout.sessions.create(sessionConfig);
 
