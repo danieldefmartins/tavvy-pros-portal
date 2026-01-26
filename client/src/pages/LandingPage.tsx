@@ -158,12 +158,12 @@ export default function LandingPage() {
 
   const faqItems = [
     {
-      question: "Is $99/year forever?",
-      answer: "No — the $99 rate is for your first 12 months. After that, your plan renews at the regular rate ($499/year for Pro, $1,299/year for Pro+) unless you cancel. You can cancel anytime during your subscription."
+      question: "Is $199/year forever?",
+      answer: "No — the $199 rate is for your first 12 months. After that, your plan renews at the regular rate ($599/year for Pro, $1,299/year for Pro+) unless you cancel. You can cancel anytime during your subscription."
     },
     {
       question: "How is this different from Thumbtack, Angi, or HomeAdvisor?",
-      answer: "Those platforms charge you $15-100+ per lead, and sell the same lead to 5-10 other contractors. You're racing against everyone else, and most of your money goes to leads that never convert. Tavvy charges a flat $99 for your first 12 months for unlimited leads, distributed fairly among pros in your area. No racing, no per-lead fees, no surprises."
+      answer: "Those platforms charge you $15-100+ per lead, and sell the same lead to 5-10 other contractors. You're racing against everyone else, and most of your money goes to leads that never convert. Tavvy charges a flat $199 for your first 12 months for unlimited leads, distributed fairly among pros in your area. No racing, no per-lead fees, no surprises."
     },
     {
       question: "What do you mean by 'fair lead distribution'?",
@@ -175,7 +175,7 @@ export default function LandingPage() {
     },
     {
       question: "What's the difference between Pro and Pro+?",
-      answer: "Pro ($99 for first 12 months, then $499/year) gives you unlimited leads, fair distribution, and our fair review system. Pro+ ($499 for first 12 months, then $1,299/year) includes everything in Pro plus a full CRM system (360 For Business) with automation, invoicing, scheduling, email marketing, and more - tools that would cost $200+/month if purchased separately. Plus 200 sponsored searches per month and digital business cards."
+      answer: "Pro ($199 for first 12 months, then $599/year) gives you unlimited leads, fair distribution, and our fair review system. Pro+ ($599 for first 12 months, then $1,299/year) includes everything in Pro plus a full CRM system (360 For Business) with automation, invoicing, scheduling, email marketing, and more - tools that would cost $200+/month if purchased separately. Plus 200 sponsored searches per month and digital business cards."
     },
     {
       question: "What trades/services do you support?",
@@ -246,7 +246,7 @@ export default function LandingPage() {
           </div>
           <div className="hidden md:block h-8 w-px bg-slate-600" />
           <div className="hidden md:block text-center">
-            <p className="text-yellow-400 font-semibold text-sm">$99 for your first 12 months</p>
+            <p className="text-yellow-400 font-semibold text-sm">$199 for your first 12 months</p>
             <p className="text-slate-400 text-xs">Then regular price. Cancel anytime.</p>
           </div>
         </div>
@@ -270,7 +270,7 @@ export default function LandingPage() {
               <span className="text-blue-600">Start Winning Jobs.</span>
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              $99 for your first 12 months. Then regular price.<br />
+              $199 for your first 12 months. Then regular price.<br />
               <span className="text-slate-500">No lead fees. No bidding wars.</span>
             </p>
             <Button
@@ -278,7 +278,7 @@ export default function LandingPage() {
               className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-lg px-10 py-7 shadow-xl shadow-orange-500/30"
               onClick={() => scrollToSignup()}
             >
-              Get Started — Plans from $99
+              Get Started — Plans from $199
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
             <p className="text-slate-500 text-sm mt-4">
@@ -386,10 +386,10 @@ export default function LandingPage() {
                 {billingCycle === 'yearly' ? (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-5xl font-bold text-slate-900">$99</span>
+                      <span className="text-5xl font-bold text-slate-900">$199</span>
                     </div>
                     <p className="text-slate-600 text-sm mb-2">for your first 12 months</p>
-                    <p className="text-slate-500 text-sm mb-2">Then $499/year</p>
+                    <p className="text-slate-500 text-sm mb-2">Then $599/year</p>
                     <div className="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full mb-4">
                       Save $400 your first year
                     </div>
@@ -421,11 +421,11 @@ export default function LandingPage() {
                   onClick={() => handleGetStarted('pro', billingCycle)}
                   disabled={isLoading && loadingPlan === `pro_${billingCycle}`}
                 >
-                  {isLoading && loadingPlan === `pro_${billingCycle}` ? 'Processing...' : `Get Pro - ${billingCycle === 'yearly' ? '$99' : '$39.99/mo'}`}
+                  {isLoading && loadingPlan === `pro_${billingCycle}` ? 'Processing...' : `Get Pro - ${billingCycle === 'yearly' ? '$199' : '$39.99/mo'}`}
                 </Button>
                 <p className="text-center text-slate-500 text-xs mt-3">
                   {billingCycle === 'yearly' 
-                    ? 'No contract. Renews at $499/year after 12 months. Cancel anytime.' 
+                    ? 'No contract. Renews at $599/year after 12 months. Cancel anytime.' 
                     : 'No contract. Renews at $49.99/mo after 12 months. Cancel anytime.'}
                 </p>
               </CardContent>
@@ -444,7 +444,7 @@ export default function LandingPage() {
                 {billingCycle === 'yearly' ? (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-5xl font-bold">$499</span>
+                      <span className="text-5xl font-bold">$599</span>
                     </div>
                     <p className="text-slate-400 text-sm mb-2">for your first 12 months</p>
                     <p className="text-slate-500 text-sm mb-2">Then $1,299/year</p>
@@ -479,7 +479,7 @@ export default function LandingPage() {
                   onClick={() => handleGetStarted('pro_plus', billingCycle)}
                   disabled={isLoading && loadingPlan === `pro_plus_${billingCycle}`}
                 >
-                  {isLoading && loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : `Get Pro+ - ${billingCycle === 'yearly' ? '$499' : '$59.99/mo'}`}
+                  {isLoading && loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : `Get Pro+ - ${billingCycle === 'yearly' ? '$599' : '$59.99/mo'}`}
                 </Button>
                 <p className="text-center text-slate-400 text-xs mt-3">
                   {billingCycle === 'yearly' 
@@ -584,7 +584,7 @@ export default function LandingPage() {
                 ))}
               </div>
               <blockquote className="text-xl md:text-2xl text-slate-700 text-center mb-6 leading-relaxed">
-                "I was spending $800/month on Thumbtack and HomeAdvisor combined. Now I pay $99 for my first year and get better quality leads. The fair distribution means I'm not racing against 10 other guys for the same job."
+                "I was spending $800/month on Thumbtack and HomeAdvisor combined. Now I pay $199 for my first year and get better quality leads. The fair distribution means I'm not racing against 10 other guys for the same job."
               </blockquote>
               <div className="text-center">
                 <p className="font-bold text-slate-900">Mike R.</p>
@@ -650,7 +650,7 @@ export default function LandingPage() {
               className="border-2 border-white text-white hover:bg-white/10 text-lg px-8 py-6"
               onClick={() => handleGetStarted('pro_plus', billingCycle)}
             >
-              Get Pro+ — $499 first year
+              Get Pro+ — $599 first year
             </Button>
           </div>
         </div>
@@ -706,14 +706,14 @@ export default function LandingPage() {
               className="bg-white text-slate-900 hover:bg-slate-100 text-lg px-8 py-6 shadow-xl"
               onClick={() => handleGetStarted('pro', billingCycle)}
             >
-              Get Pro — $99 first year
+              Get Pro — $199 first year
             </Button>
             <Button
               size="lg"
               className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-lg px-8 py-6 shadow-xl shadow-orange-500/30"
               onClick={() => handleGetStarted('pro_plus', billingCycle)}
             >
-              Get Pro+ — $499 first year
+              Get Pro+ — $599 first year
             </Button>
           </div>
           <p className="text-slate-500 text-sm mt-4">
@@ -787,7 +787,7 @@ export default function LandingPage() {
                     handleGetStarted('pro_plus', billingCycle);
                   }}
                 >
-                  Get Pro+ — $499 first year
+                  Get Pro+ — $599 first year
                 </Button>
                 <p className="text-slate-400 text-xs mt-3">
                   Renews at $1,299/year after 12 months. Cancel anytime.

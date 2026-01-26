@@ -462,13 +462,13 @@ export default function ProsDashboard() {
                     {profile?.subscription_status || 'Inactive'}
                   </Badge>
                   <p className="text-2xl font-bold text-gray-900 mt-2">
-                    {profile?.subscription_plan === 'pro_plus' ? '$499' : '$99'}
+                    {profile?.subscription_plan === 'pro_plus' ? '$599' : '$199'}
                   </p>
                   <p className="text-sm text-gray-500">
                     {profile?.subscription_plan === 'pro_plus' ? 'Pro+ Plan' : 'Founding Pro Rate'}
                   </p>
                   <p className="text-xs text-gray-400 mt-2">
-                    First year pricing • Then {profile?.subscription_plan === 'pro_plus' ? '$1,299' : '$499'}/year
+                    First year pricing • Then {profile?.subscription_plan === 'pro_plus' ? '$1,299' : '$599'}/year
                   </p>
                 </div>
               </CardContent>

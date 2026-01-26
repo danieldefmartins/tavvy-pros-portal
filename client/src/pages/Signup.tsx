@@ -153,7 +153,7 @@ export default function Signup() {
             }`}>
               {selectedPlan === 'pro_plus' && <Crown className="h-4 w-4" />}
               <span className="font-semibold">
-                {selectedPlan === 'pro_plus' ? 'Pro+ Plan - $499 first year' : 'Pro Plan - $99 first year'}
+                {selectedPlan === 'pro_plus' ? 'Pro+ Plan - $599 first year' : 'Pro Plan - $199 first year'}
               </span>
             </div>
 
@@ -304,10 +304,10 @@ export default function Signup() {
             
             <h3 className="text-xl font-bold text-slate-900 mb-1">Pro</h3>
             <div className="flex items-baseline gap-1 mb-2">
-              <span className="text-4xl font-bold text-slate-900">$99</span>
+              <span className="text-4xl font-bold text-slate-900">$199</span>
               <span className="text-slate-500">/first year</span>
             </div>
-            <p className="text-xs text-slate-500 mb-4">Then $499/year</p>
+            <p className="text-xs text-slate-500 mb-4">Then $599/year</p>
             
             <div className="space-y-2">
               {proFeatures.map((feature, i) => (
@@ -342,7 +342,7 @@ export default function Signup() {
             
             <h3 className="text-xl font-bold text-white mb-1">Pro+</h3>
             <div className="flex items-baseline gap-1 mb-2">
-              <span className="text-4xl font-bold text-white">$499</span>
+              <span className="text-4xl font-bold text-white">$599</span>
               <span className="text-slate-400">/first year</span>
             </div>
             <p className="text-xs text-slate-400 mb-4">Then $1,299/year</p>
