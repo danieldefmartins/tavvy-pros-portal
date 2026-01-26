@@ -386,12 +386,13 @@ export default function LandingPage() {
                 {billingCycle === 'yearly' ? (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-2xl text-slate-400 line-through">$599</span>
                       <span className="text-5xl font-bold text-slate-900">$199</span>
                     </div>
-                    <p className="text-slate-600 text-sm mb-2">for your first 12 months</p>
+                    <p className="text-slate-600 text-sm mb-2">for your first year</p>
                     <p className="text-slate-500 text-sm mb-2">Then $599/year</p>
                     <div className="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full mb-4">
-                      Save $400 your first year
+                      Founders Discount: Save $400
                     </div>
                     <p className="text-slate-500 text-xs mb-4">
                       <span className="font-bold text-orange-600">{spotsLeft.toLocaleString()}</span> of 1,000 spots left
@@ -400,10 +401,15 @@ export default function LandingPage() {
                 ) : (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-2xl text-slate-400 line-through">$59.99</span>
                       <span className="text-5xl font-bold text-slate-900">$49.99</span>
                       <span className="text-slate-500">/month</span>
                     </div>
-                    <p className="text-slate-500 text-sm mb-6">Then $49.99/mo after first year</p>
+                    <p className="text-slate-600 text-sm mb-2">for your first 12 months</p>
+                    <p className="text-slate-500 text-sm mb-2">Then $59.99/mo</p>
+                    <div className="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full mb-4">
+                      Founders Discount: Save $10/mo
+                    </div>
                   </>
                 )}
 
@@ -421,12 +427,12 @@ export default function LandingPage() {
                   onClick={() => handleGetStarted('pro', billingCycle)}
                   disabled={isLoading && loadingPlan === `pro_${billingCycle}`}
                 >
-                  {isLoading && loadingPlan === `pro_${billingCycle}` ? 'Processing...' : `Get Pro - ${billingCycle === 'yearly' ? '$199' : '$49.99/mo'}`}
+                  {isLoading && loadingPlan === `pro_${billingCycle}` ? 'Processing...' : `Get Pro - ${billingCycle === 'yearly' ? '$199/year' : '$49.99/mo'}`}
                 </Button>
                 <p className="text-center text-slate-500 text-xs mt-3">
                   {billingCycle === 'yearly' 
-                    ? 'No contract. Renews at $599/year after 12 months. Cancel anytime.' 
-                    : 'No contract. Cancel anytime.'}
+                    ? 'No contract. Renews at $599/year. Cancel anytime.' 
+                    : 'No contract. Renews at $59.99/mo after 12 months. Cancel anytime.'}
                 </p>
               </CardContent>
             </Card>
@@ -444,12 +450,13 @@ export default function LandingPage() {
                 {billingCycle === 'yearly' ? (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-2xl text-slate-500 line-through">$1,399</span>
                       <span className="text-5xl font-bold">$599</span>
                     </div>
-                    <p className="text-slate-400 text-sm mb-2">for your first 12 months</p>
+                    <p className="text-slate-400 text-sm mb-2">for your first year</p>
                     <p className="text-slate-500 text-sm mb-2">Then $1,399/year</p>
                     <div className="inline-block bg-orange-500 text-white text-sm font-medium px-3 py-1 rounded-full mb-4">
-                      Save $800 your first year
+                      Founders Discount: Save $800
                     </div>
                     <p className="text-slate-400 text-xs mb-4">
                       <span className="font-bold text-orange-400">{spotsLeft.toLocaleString()}</span> of 1,000 spots left
@@ -458,10 +465,15 @@ export default function LandingPage() {
                 ) : (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-2xl text-slate-500 line-through">$119.99</span>
                       <span className="text-5xl font-bold">$69.99</span>
                       <span className="text-slate-400">/month</span>
                     </div>
-                    <p className="text-slate-400 text-sm mb-6">Then $109.99/mo after first year</p>
+                    <p className="text-slate-400 text-sm mb-2">for your first 12 months</p>
+                    <p className="text-slate-500 text-sm mb-2">Then $119.99/mo</p>
+                    <div className="inline-block bg-orange-500 text-white text-sm font-medium px-3 py-1 rounded-full mb-4">
+                      Founders Discount: Save $50/mo
+                    </div>
                   </>
                 )}
 
@@ -479,12 +491,12 @@ export default function LandingPage() {
                   onClick={() => handleGetStarted('pro_plus', billingCycle)}
                   disabled={isLoading && loadingPlan === `pro_plus_${billingCycle}`}
                 >
-                  {isLoading && loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : `Get Pro+ - ${billingCycle === 'yearly' ? '$599' : '$69.99/mo'}`}
+                  {isLoading && loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : `Get Pro+ - ${billingCycle === 'yearly' ? '$599/year' : '$69.99/mo'}`}
                 </Button>
                 <p className="text-center text-slate-400 text-xs mt-3">
                   {billingCycle === 'yearly' 
-                    ? 'No contract. Renews at $1,399/year after 12 months. Cancel anytime.' 
-                    : 'No contract. Renews at $109.99/mo after 12 months. Cancel anytime.'}
+                    ? 'No contract. Renews at $1,399/year. Cancel anytime.' 
+                    : 'No contract. Renews at $119.99/mo after 12 months. Cancel anytime.'}
                 </p>
                 
                 <button 
