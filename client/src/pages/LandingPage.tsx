@@ -159,7 +159,7 @@ export default function LandingPage() {
   const faqItems = [
     {
       question: "Is $199/year forever?",
-      answer: "No — the $199 rate is for your first 12 months. After that, your plan renews at the regular rate ($599/year for Pro, $1,299/year for Pro+) unless you cancel. You can cancel anytime during your subscription."
+      answer: "No — the $199 rate is for your first 12 months. After that, your plan renews at the regular rate ($599/year for Pro, $1,399/year for Pro+) unless you cancel. You can cancel anytime during your subscription."
     },
     {
       question: "How is this different from Thumbtack, Angi, or HomeAdvisor?",
@@ -175,7 +175,7 @@ export default function LandingPage() {
     },
     {
       question: "What's the difference between Pro and Pro+?",
-      answer: "Pro ($199 for first 12 months, then $599/year) gives you unlimited leads, fair distribution, and our fair review system. Pro+ ($599 for first 12 months, then $1,299/year) includes everything in Pro plus a full CRM system (360 For Business) with automation, invoicing, scheduling, email marketing, and more - tools that would cost $200+/month if purchased separately. Plus 200 sponsored searches per month and digital business cards."
+      answer: "Pro ($199 for first 12 months, then $599/year) gives you unlimited leads, fair distribution, and our fair review system. Pro+ ($599 for first 12 months, then $1,399/year) includes everything in Pro plus a full CRM system (360 For Business) with automation, invoicing, scheduling, email marketing, and more - tools that would cost $200+/month if purchased separately. Plus 200 sponsored searches per month and digital business cards."
     },
     {
       question: "What trades/services do you support?",
@@ -447,7 +447,7 @@ export default function LandingPage() {
                       <span className="text-5xl font-bold">$599</span>
                     </div>
                     <p className="text-slate-400 text-sm mb-2">for your first 12 months</p>
-                    <p className="text-slate-500 text-sm mb-2">Then $1,299/year</p>
+                    <p className="text-slate-500 text-sm mb-2">Then $1,399/year</p>
                     <div className="inline-block bg-orange-500 text-white text-sm font-medium px-3 py-1 rounded-full mb-4">
                       Save $800 your first year
                     </div>
@@ -483,7 +483,7 @@ export default function LandingPage() {
                 </Button>
                 <p className="text-center text-slate-400 text-xs mt-3">
                   {billingCycle === 'yearly' 
-                    ? 'No contract. Renews at $1,299/year after 12 months. Cancel anytime.' 
+                    ? 'No contract. Renews at $1,399/year after 12 months. Cancel anytime.' 
                     : 'No contract. Renews at $109.99/mo after 12 months. Cancel anytime.'}
                 </p>
                 
@@ -790,7 +790,7 @@ export default function LandingPage() {
                   Get Pro+ — $599 first year
                 </Button>
                 <p className="text-slate-400 text-xs mt-3">
-                  Renews at $1,299/year after 12 months. Cancel anytime.
+                  Renews at $1,399/year after 12 months. Cancel anytime.
                 </p>
               </div>
             </div>
