@@ -334,3 +334,265 @@ export async function getRepStats(userId: string): Promise<RepStats> {
     places_reviewed: parseInt(result[0].places_reviewed as string, 10),
   };
 }
+
+
+// ============ TAVVY PLACES (User-Generated) ============
+
+export interface TavvyPlaceInput {
+  name: string;
+  description?: string | null;
+  tavvy_category: string;
+  tavvy_subcategory?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  address?: string | null;
+  address_line2?: string | null;
+  city?: string | null;
+  region?: string | null;
+  postcode?: string | null;
+  country?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  website?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  twitter?: string | null;
+  tiktok?: string | null;
+  hours_display?: string | null;
+  hours_json?: any;
+  price_level?: number | null;
+  photos?: string[] | null;
+  cover_image_url?: string | null;
+}
+
+export interface TavvyPlace extends TavvyPlaceInput {
+  id: string;
+  is_verified: boolean;
+  is_claimed: boolean;
+  source: string;
+  created_by: string | null;
+  created_at: Date;
+  updated_at: Date;
+  is_deleted: boolean;
+  deleted_at: Date | null;
+}
+
+export async function createTavvyPlace(
+  input: TavvyPlaceInput,
+  createdBy: string
+): Promise<TavvyPlace | null> {
+  const sql = getSupabaseDb();
+  if (!sql) return null;
+
+  try {
+    const result = await sql<TavvyPlace[]>`
+      INSERT INTO tavvy_places (
+        name, description, tavvy_category, tavvy_subcategory,
+        latitude, longitude, address, address_line2,
+        city, region, postcode, country,
+        phone, email, website, instagram, facebook, twitter, tiktok,
+        hours_display, hours_json, price_level,
+        photos, cover_image_url,
+        source, created_by
+      ) VALUES (
+        ${input.name},
+        ${input.description || null},
+        ${input.tavvy_category},
+        ${input.tavvy_subcategory || null},
+        ${input.latitude || null},
+        ${input.longitude || null},
+        ${input.address || null},
+        ${input.address_line2 || null},
+        ${input.city || null},
+        ${input.region || null},
+        ${input.postcode || null},
+        ${input.country || null},
+        ${input.phone || null},
+        ${input.email || null},
+        ${input.website || null},
+        ${input.instagram || null},
+        ${input.facebook || null},
+        ${input.twitter || null},
+        ${input.tiktok || null},
+        ${input.hours_display || null},
+        ${input.hours_json ? JSON.stringify(input.hours_json) : null}::jsonb,
+        ${input.price_level || null},
+        ${input.photos || null},
+        ${input.cover_image_url || null},
+        'pro',
+        ${createdBy}
+      )
+      RETURNING *
+    `;
+
+    if (result.length > 0) {
+      console.log(`[Supabase] Created new tavvy place: ${result[0].name} (${result[0].id})`);
+      return result[0];
+    }
+    return null;
+  } catch (error) {
+    console.error("[Supabase] Create tavvy place error:", error);
+    return null;
+  }
+}
+
+export async function getTavvyPlacesByCreator(
+  createdBy: string,
+  limit: number = 50,
+  offset: number = 0
+): Promise<TavvyPlace[]> {
+  const sql = getSupabaseDb();
+  if (!sql) return [];
+
+  try {
+    const result = await sql<TavvyPlace[]>`
+      SELECT * FROM tavvy_places
+      WHERE created_by = ${createdBy}
+        AND is_deleted = false
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    `;
+    return result;
+  } catch (error) {
+    console.error("[Supabase] Get tavvy places by creator error:", error);
+    return [];
+  }
+}
+
+// Get all tavvy categories for dropdown
+export function getTavvyCategories(): { slug: string; name: string }[] {
+  return [
+    { slug: 'arts', name: 'Arts & Culture' },
+    { slug: 'automotive', name: 'Automotive' },
+    { slug: 'nightlife', name: 'Bars & Nightlife' },
+    { slug: 'beauty', name: 'Beauty & Personal Care' },
+    { slug: 'business', name: 'Business Services' },
+    { slug: 'coffee_tea', name: 'Coffee & Tea' },
+    { slug: 'education', name: 'Education' },
+    { slug: 'entertainment', name: 'Entertainment' },
+    { slug: 'events', name: 'Events & Venues' },
+    { slug: 'financial', name: 'Financial Services' },
+    { slug: 'fitness', name: 'Fitness & Sports' },
+    { slug: 'food', name: 'Food & Dining' },
+    { slug: 'government', name: 'Government' },
+    { slug: 'health', name: 'Health & Medical' },
+    { slug: 'home', name: 'Home Services' },
+    { slug: 'hotels', name: 'Hotels & Lodging' },
+    { slug: 'legal', name: 'Legal Services' },
+    { slug: 'outdoors', name: 'Outdoors & Recreation' },
+    { slug: 'pets', name: 'Pets & Animals' },
+    { slug: 'professional', name: 'Professional Services' },
+    { slug: 'real_estate', name: 'Real Estate' },
+    { slug: 'religious', name: 'Religious Organizations' },
+    { slug: 'rv_camping', name: 'RV & Camping' },
+    { slug: 'shopping', name: 'Shopping & Retail' },
+    { slug: 'transportation', name: 'Transportation' },
+    { slug: 'other', name: 'Other' },
+  ];
+}
+
+// ============================================
+// CONTENT DRAFTS - For Universal Add System
+// ============================================
+
+export interface ContentDraft {
+  id: string;
+  user_id: string;
+  status: string;
+  current_step: number;
+  latitude: number | null;
+  longitude: number | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  region: string | null;
+  postal_code: string | null;
+  country: string | null;
+  formatted_address: string | null;
+  content_type: string | null;
+  content_subtype: string | null;
+  data: Record<string, any>;
+  photos: string[];
+  cover_photo: string | null;
+  created_at: string;
+  updated_at: string;
+  remind_later_until: string | null;
+}
+
+export interface CreateDraftInput {
+  user_id: string;
+  latitude: number;
+  longitude: number;
+  address_line1?: string;
+  address_line2?: string;
+  city?: string;
+  region?: string;
+  postal_code?: string;
+  country?: string;
+  formatted_address?: string;
+}
+
+// Create a new draft
+export async function createDraft(input: CreateDraftInput): Promise<ContentDraft | null> {
+  const sql = getSupabaseDb();
+  if (!sql) return null;
+  
+  try {
+    const result = await sql<ContentDraft[]>`
+      INSERT INTO content_drafts (
+        user_id, status, current_step, latitude, longitude,
+        address_line1, address_line2, city, region, postal_code,
+        country, formatted_address, data, photos
+      ) VALUES (
+        ${input.user_id}, 'draft_location', 1, ${input.latitude}, ${input.longitude},
+        ${input.address_line1 || null}, ${input.address_line2 || null},
+        ${input.city || null}, ${input.region || null}, ${input.postal_code || null},
+        ${input.country || null}, ${input.formatted_address || null},
+        '{}', '{}'
+      )
+      RETURNING *
+    `;
+    return result[0] || null;
+  } catch (error) {
+    console.error("[Supabase] Create draft error:", error);
+    return null;
+  }
+}
+
+// Get active draft for user
+export async function getActiveDraft(userId: string): Promise<ContentDraft | null> {
+  const sql = getSupabaseDb();
+  if (!sql) return null;
+  
+  try {
+    const result = await sql<ContentDraft[]>`
+      SELECT * FROM content_drafts
+      WHERE user_id = ${userId}
+        AND status != 'submitted'
+        AND (remind_later_until IS NULL OR remind_later_until < NOW())
+      ORDER BY updated_at DESC
+      LIMIT 1
+    `;
+    return result[0] || null;
+  } catch (error) {
+    console.error("[Supabase] Get active draft error:", error);
+    return null;
+  }
+}
+
+// Delete draft
+export async function deleteDraft(id: string, userId: string): Promise<boolean> {
+  const sql = getSupabaseDb();
+  if (!sql) return false;
+  
+  try {
+    await sql`
+      DELETE FROM content_drafts
+      WHERE id = ${id} AND user_id = ${userId}
+    `;
+    return true;
+  } catch (error) {
+    console.error("[Supabase] Delete draft error:", error);
+    return false;
+  }
+}

@@ -14,6 +14,7 @@ import ProsDashboard from "./pages/ProsDashboard";
 import DigitalCardEditor from "./pages/DigitalCardEditor";
 import PublicProCard from "./pages/PublicProCard";
 import MessagesPage from "./pages/MessagesPage";
+import AddServiceLocation from "./pages/AddServiceLocation";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -113,6 +114,11 @@ function Router() {
       <Route path="/digital-card">
         <ProtectedRoute>
           <DigitalCardEditor />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/add-location">
+        <ProtectedRoute>
+          <AddServiceLocation />
         </ProtectedRoute>
       </Route>
       

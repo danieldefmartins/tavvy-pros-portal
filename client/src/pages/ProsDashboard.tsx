@@ -22,9 +22,10 @@ import {
   LogOut,
   Loader2,
   Settings,
-  Clock,
+Clock,
   CheckCircle,
-  XCircle
+  XCircle,
+  PlusCircle
 } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -353,6 +354,13 @@ export default function ProsDashboard() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                <Button 
+                  className="w-full justify-start bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600" 
+                  onClick={() => setLocation('/add-location')}
+                >
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Add Service Location
+                </Button>
                 <Button 
                   className="w-full justify-start bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600" 
                   onClick={() => setLocation('/digital-card')}

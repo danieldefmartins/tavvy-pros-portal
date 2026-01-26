@@ -11,6 +11,11 @@ import {
   batchImportReviews,
   getRepStats,
   type BatchReviewInput,
+  // Tavvy Places
+  createTavvyPlace,
+  getTavvyPlacesByCreator,
+  getTavvyCategories,
+  type TavvyPlaceInput,
 } from "./supabaseDb";
 import { getDb } from "./db";
 import { repActivityLog, batchImportJobs } from "../drizzle/schema";
@@ -129,6 +134,91 @@ export const appRouter = router({
       .input(z.object({ placeId: z.string() }))
       .query(async ({ input }) => {
         return getPlaceSignalAggregates(input.placeId);
+      }),
+
+    // ============ TAVVY PLACES (Pro-Created) ============
+    
+    // Get tavvy categories for dropdown
+    getTavvyCategories: protectedProcedure.query(() => {
+      return getTavvyCategories();
+    }),
+
+    // Create a new tavvy place
+    create: protectedProcedure
+      .input(
+        z.object({
+          name: z.string().min(1, "Name is required").max(200),
+          description: z.string().max(2000).optional(),
+          tavvy_category: z.string().min(1, "Category is required"),
+          tavvy_subcategory: z.string().optional(),
+          latitude: z.number().min(-90).max(90).optional(),
+          longitude: z.number().min(-180).max(180).optional(),
+          address: z.string().max(500).optional(),
+          address_line2: z.string().max(200).optional(),
+          city: z.string().max(100).optional(),
+          region: z.string().max(100).optional(),
+          postcode: z.string().max(20).optional(),
+          country: z.string().max(100).optional(),
+          phone: z.string().max(50).optional(),
+          email: z.string().email().optional().or(z.literal("")),
+          website: z.string().url().optional().or(z.literal("")),
+          instagram: z.string().max(100).optional(),
+          facebook: z.string().max(200).optional(),
+          twitter: z.string().max(100).optional(),
+          tiktok: z.string().max(100).optional(),
+          hours_display: z.string().max(500).optional(),
+          price_level: z.number().min(1).max(4).optional(),
+          cover_image_url: z.string().url().optional().or(z.literal("")),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const userId = ctx.user?.id;
+        if (!userId) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "You must be logged in to create a place",
+          });
+        }
+
+        // Clean up empty strings
+        const cleanInput: TavvyPlaceInput = {
+          ...input,
+          email: input.email || null,
+          website: input.website || null,
+          cover_image_url: input.cover_image_url || null,
+        };
+
+        const place = await createTavvyPlace(cleanInput, userId);
+        if (!place) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create place",
+          });
+        }
+
+        return place;
+      }),
+
+    // Get places created by the current pro
+    getMyPlaces: protectedProcedure
+      .input(
+        z.object({
+          limit: z.number().min(1).max(100).default(50),
+          offset: z.number().min(0).default(0),
+        }).optional()
+      )
+      .query(async ({ ctx, input }) => {
+        const userId = ctx.user?.id;
+        if (!userId) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "You must be logged in to view your places",
+          });
+        }
+
+        const limit = input?.limit || 50;
+        const offset = input?.offset || 0;
+        return getTavvyPlacesByCreator(userId, limit, offset);
       }),
   }),
 
