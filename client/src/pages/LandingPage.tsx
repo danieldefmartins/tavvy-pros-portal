@@ -162,12 +162,12 @@ export default function LandingPage() {
       answer: "No — the $199 rate is for your first 12 months. After that, your plan renews at the regular rate ($599/year for Pro, $1,399/year for Pro+) unless you cancel. You can cancel anytime during your subscription."
     },
     {
-      question: "How is this different from Thumbtack, Angi, or HomeAdvisor?",
-      answer: "Those platforms charge you $15-100+ per lead, and sell the same lead to 5-10 other contractors. You're racing against everyone else, and most of your money goes to leads that never convert. Tavvy charges a flat $199 for your first 12 months for unlimited leads, distributed fairly among pros in your area. No racing, no per-lead fees, no surprises."
+      question: "How is this different from other lead platforms?",
+      answer: "Other platforms charge you $15-100+ per lead, and sell the same lead to 5-10 other pros. You're racing against everyone else, and most of your money goes to leads that never convert. Tavvy charges a flat $199 for your first 12 months for unlimited leads, distributed fairly among pros in your area. No racing, no per-lead fees, no surprises."
     },
     {
       question: "What do you mean by 'fair lead distribution'?",
-      answer: "Instead of selling the same lead to 10 contractors and watching them fight for it, we distribute leads fairly among qualified pros in each area. Everyone gets their fair share of opportunities. No racing to call first, no paying for leads that 9 other people also got."
+      answer: "Instead of selling the same lead to 10 professionals and watching them fight for it, we distribute leads fairly among qualified pros in each area. Everyone gets their fair share of opportunities. No racing to call first, no paying for leads that 9 other people also got."
     },
     {
       question: "How does the review system work?",
@@ -179,7 +179,7 @@ export default function LandingPage() {
     },
     {
       question: "What trades/services do you support?",
-      answer: "We support all local service professionals including plumbers, electricians, HVAC technicians, roofers, painters, landscapers, cleaners, handymen, contractors, and many more. If you provide services to local customers, Tavvy Pro is built for you."
+      answer: "We support ALL professional service providers — not just home services. This includes auto mechanics, boat mechanics, car detailers, architects, photographers, event planners, personal trainers, tutors, accountants, lawyers, and literally any professional who provides services to customers. If you're a pro who does work for others, Tavvy is built for you."
     },
     {
       question: "Can I cancel anytime?",
@@ -298,7 +298,7 @@ export default function LandingPage() {
             
             <div className="space-y-4 mb-8">
               {[
-                "You're a local service pro (plumber, electrician, contractor, etc.)",
+                "You're a professional who provides services (any industry)",
                 "You're tired of paying $50-100+ per lead that goes nowhere",
                 "You want predictable costs, not surprise bills",
                 "You believe one bad review shouldn't define your business",
@@ -341,7 +341,7 @@ export default function LandingPage() {
               Lock In Your First-Year Rate
             </h2>
             <p className="text-lg text-slate-600 mb-4">
-              This exclusive pricing is only available to our first 1,000 contractors
+              This exclusive pricing is only available to our first 1,000 professionals
             </p>
             <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-full text-sm">
               <span className="font-bold text-orange-400">{spotsLeft.toLocaleString()}</span>
@@ -547,7 +547,7 @@ export default function LandingPage() {
               How It Works
             </h2>
             <p className="text-lg text-slate-600">
-              Simple, fair, and built for contractors
+              Simple, fair, and built for professionals
             </p>
           </div>
 
@@ -563,7 +563,7 @@ export default function LandingPage() {
                 step: "2",
                 icon: Target,
                 title: "Tavvy Distributes Fairly",
-                desc: "Leads are split among area pros. No racing, no bidding wars."
+                desc: "Leads are split among pros in your area. No racing, no bidding wars."
               },
               {
                 step: "3",
@@ -596,11 +596,11 @@ export default function LandingPage() {
                 ))}
               </div>
               <blockquote className="text-xl md:text-2xl text-slate-700 text-center mb-6 leading-relaxed">
-                "I was spending $800/month on Thumbtack and HomeAdvisor combined. Now I pay $199 for my first year and get better quality leads. The fair distribution means I'm not racing against 10 other guys for the same job."
+                "I was spending $800/month on lead generation platforms. Now I pay $199 for my first year and get better quality leads. The fair distribution means I'm not racing against 10 other pros for the same job."
               </blockquote>
               <div className="text-center">
                 <p className="font-bold text-slate-900">Mike R.</p>
-                <p className="text-slate-500">Plumber, Austin TX</p>
+                <p className="text-slate-500">Service Professional, Austin TX</p>
               </div>
             </CardContent>
           </Card>
@@ -626,12 +626,12 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Built by Contractors */}
+            {/* Built by Pros, For Pros */}
             <div className="bg-white/5 rounded-2xl p-8 border border-white/10">
               <Handshake className="w-12 h-12 text-orange-400 mb-4" />
-              <h3 className="text-xl font-bold mb-4">Built by Contractors</h3>
+              <h3 className="text-xl font-bold mb-4">Built by Pros, For Pros</h3>
               <p className="text-slate-300 leading-relaxed">
-                Our founding team spent 15+ years in the trades. We built Tavvy because we got tired of Big Tech platforms extracting every dollar from hardworking contractors. We're on <strong className="text-white">your</strong> side.
+                Our founding team spent 15+ years as service professionals. We built Tavvy because we got tired of Big Tech platforms extracting every dollar from hardworking pros. We're on <strong className="text-white">your</strong> side.
               </p>
             </div>
           </div>
