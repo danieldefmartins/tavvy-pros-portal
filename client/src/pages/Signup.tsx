@@ -8,6 +8,22 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, UserPlus, AlertCircle, CheckCircle, PartyPopper, Crown, Check, ArrowRight } from "lucide-react";
 import { signUpWithEmail } from "@/lib/supabase";
 
+// Brand colors
+const COLORS = {
+  background: '#000000',
+  backgroundAlt: '#0A0A0A',
+  backgroundCard: '#111111',
+  teal: '#00CED1',
+  tealDark: '#00A5A8',
+  gold: '#D4A84B',
+  goldLight: '#E5B84D',
+  green: '#10B981',
+  border: '#1F1F1F',
+  text: '#FFFFFF',
+  textMuted: '#9CA3AF',
+  textDim: '#6B7280',
+};
+
 export default function Signup() {
   const [, setLocation] = useLocation();
   const searchString = useSearch();
@@ -86,31 +102,46 @@ export default function Signup() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f9f7f2] p-4">
-        <Card className="w-full max-w-md border-none shadow-xl">
+      <div 
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ backgroundColor: COLORS.background }}
+      >
+        <Card 
+          className="w-full max-w-md border-none shadow-xl"
+          style={{ backgroundColor: COLORS.backgroundCard }}
+        >
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-8 w-8 text-white" />
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: COLORS.green }}
+              >
+                <CheckCircle className="h-8 w-8 text-black" />
               </div>
             </div>
-            <CardTitle className="text-2xl text-slate-900">Check Your Email</CardTitle>
-            <CardDescription className="text-slate-600">
-              We've sent a confirmation link to <strong className="text-slate-800">{email}</strong>. 
+            <CardTitle className="text-2xl text-white">Check Your Email</CardTitle>
+            <CardDescription style={{ color: COLORS.textMuted }}>
+              We've sent a confirmation link to <strong className="text-white">{email}</strong>. 
               Please check your email and click the link to activate your account.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center text-slate-600">
+          <CardContent className="text-center" style={{ color: COLORS.textMuted }}>
             <p className="text-sm">
               After confirming your email, you'll be able to set up your Business Profile and start receiving leads.
             </p>
             {selectedPlan === 'pro_plus' && (
-              <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-xl">
-                <div className="flex items-center justify-center gap-2 text-orange-700 font-semibold mb-1">
+              <div 
+                className="mt-4 p-4 rounded-xl"
+                style={{ 
+                  backgroundColor: `${COLORS.gold}20`,
+                  border: `1px solid ${COLORS.gold}30`
+                }}
+              >
+                <div className="flex items-center justify-center gap-2 font-semibold mb-1" style={{ color: COLORS.gold }}>
                   <Crown className="h-5 w-5" />
                   Pro+ Member
                 </div>
-                <p className="text-orange-600 text-sm">
+                <p className="text-sm" style={{ color: COLORS.gold }}>
                   You'll receive your 360 For Business CRM login credentials via email within 24 hours.
                 </p>
               </div>
@@ -118,7 +149,11 @@ export default function Signup() {
           </CardContent>
           <CardFooter>
             <Button 
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800" 
+              className="w-full font-semibold"
+              style={{ 
+                background: `linear-gradient(135deg, ${COLORS.teal} 0%, ${COLORS.gold} 100%)`,
+                color: 'black'
+              }}
               onClick={() => setLocation("/login")}
             >
               Back to Login
@@ -132,25 +167,41 @@ export default function Signup() {
   // If payment was successful, show the account creation form
   if (paymentSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f9f7f2] p-4">
-        <Card className="w-full max-w-md border-none shadow-xl">
+      <div 
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ backgroundColor: COLORS.background }}
+      >
+        <Card 
+          className="w-full max-w-md border-none shadow-xl"
+          style={{ backgroundColor: COLORS.backgroundCard }}
+        >
           <CardHeader className="text-center">
-            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl">
-              <div className="flex items-center justify-center gap-2 text-green-700 font-semibold mb-1">
+            <div 
+              className="mb-4 p-4 rounded-xl"
+              style={{ 
+                backgroundColor: `${COLORS.green}20`,
+                border: `1px solid ${COLORS.green}30`
+              }}
+            >
+              <div className="flex items-center justify-center gap-2 font-semibold mb-1" style={{ color: COLORS.green }}>
                 <PartyPopper className="h-5 w-5" />
                 Payment Successful!
               </div>
-              <p className="text-green-600 text-sm">
+              <p className="text-sm" style={{ color: COLORS.green }}>
                 Welcome to Tavvy Pros {selectedPlan === 'pro_plus' ? 'Pro+' : 'Pro'}! Create your account to get started.
               </p>
             </div>
             
             {/* Show selected plan badge */}
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 ${
-              selectedPlan === 'pro_plus' 
-                ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white' 
-                : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
-            }`}>
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
+              style={{ 
+                background: selectedPlan === 'pro_plus' 
+                  ? `linear-gradient(135deg, ${COLORS.gold} 0%, ${COLORS.goldLight} 100%)`
+                  : `linear-gradient(135deg, ${COLORS.teal} 0%, ${COLORS.tealDark} 100%)`,
+                color: 'black'
+              }}
+            >
               {selectedPlan === 'pro_plus' && <Crown className="h-4 w-4" />}
               <span className="font-semibold">
                 {selectedPlan === 'pro_plus' ? 'Pro+ Plan - $599 first year' : 'Pro Plan - $199 first year'}
@@ -164,8 +215,8 @@ export default function Signup() {
                 className="h-12 w-auto"
               />
             </div>
-            <CardTitle className="text-2xl text-slate-900">Create Your Pro Account</CardTitle>
-            <CardDescription className="text-slate-600">
+            <CardTitle className="text-2xl text-white">Create Your Pro Account</CardTitle>
+            <CardDescription style={{ color: COLORS.textMuted }}>
               Complete your registration to access your Pro dashboard
             </CardDescription>
           </CardHeader>
@@ -178,7 +229,7 @@ export default function Signup() {
                 </Alert>
               )}
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-slate-700">Full Name</Label>
+                <Label htmlFor="fullName" style={{ color: COLORS.textMuted }}>Full Name</Label>
                 <Input
                   id="fullName"
                   type="text"
@@ -187,11 +238,16 @@ export default function Signup() {
                   onChange={(e) => setFullName(e.target.value)}
                   required
                   disabled={loading}
-                  className="border-slate-300 focus:border-blue-500"
+                  style={{ 
+                    backgroundColor: COLORS.background,
+                    borderColor: COLORS.border,
+                    color: 'white'
+                  }}
+                  className="placeholder:text-gray-500"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700">Email</Label>
+                <Label htmlFor="email" style={{ color: COLORS.textMuted }}>Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -200,11 +256,16 @@ export default function Signup() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={loading}
-                  className="border-slate-300 focus:border-blue-500"
+                  style={{ 
+                    backgroundColor: COLORS.background,
+                    borderColor: COLORS.border,
+                    color: 'white'
+                  }}
+                  className="placeholder:text-gray-500"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-700">Password</Label>
+                <Label htmlFor="password" style={{ color: COLORS.textMuted }}>Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -213,11 +274,16 @@ export default function Signup() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading}
-                  className="border-slate-300 focus:border-blue-500"
+                  style={{ 
+                    backgroundColor: COLORS.background,
+                    borderColor: COLORS.border,
+                    color: 'white'
+                  }}
+                  className="placeholder:text-gray-500"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-slate-700">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" style={{ color: COLORS.textMuted }}>Confirm Password</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -226,18 +292,25 @@ export default function Signup() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   disabled={loading}
-                  className="border-slate-300 focus:border-blue-500"
+                  style={{ 
+                    backgroundColor: COLORS.background,
+                    borderColor: COLORS.border,
+                    color: 'white'
+                  }}
+                  className="placeholder:text-gray-500"
                 />
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
               <Button 
                 type="submit" 
-                className={`w-full ${
-                  selectedPlan === 'pro_plus'
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700'
-                    : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
-                }`}
+                className="w-full font-semibold"
+                style={{ 
+                  background: selectedPlan === 'pro_plus'
+                    ? `linear-gradient(135deg, ${COLORS.gold} 0%, ${COLORS.goldLight} 100%)`
+                    : `linear-gradient(135deg, ${COLORS.teal} 0%, ${COLORS.tealDark} 100%)`,
+                  color: 'black'
+                }}
                 disabled={loading}
               >
                 {loading ? (
@@ -255,7 +328,8 @@ export default function Signup() {
               <Button
                 type="button"
                 variant="link"
-                className="p-0 h-auto text-slate-600 hover:text-slate-900"
+                className="p-0 h-auto"
+                style={{ color: COLORS.textMuted }}
                 onClick={() => setLocation("/login")}
               >
                 Already have an account? Sign in
@@ -269,7 +343,10 @@ export default function Signup() {
 
   // Default view - Plan selection before payment
   return (
-    <div className="min-h-screen bg-[#f9f7f2] py-12 px-4">
+    <div 
+      className="min-h-screen py-12 px-4"
+      style={{ backgroundColor: COLORS.background }}
+    >
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-10">
           <img 
@@ -277,43 +354,53 @@ export default function Signup() {
             alt="Tavvy" 
             className="h-12 w-auto mx-auto mb-4"
           />
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Choose Your Plan</h1>
-          <p className="text-slate-600">Select the plan that's right for your business</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Choose Your Plan</h1>
+          <p style={{ color: COLORS.textMuted }}>Select the plan that's right for your business</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           {/* Pro Plan Card */}
           <div 
-            className={`bg-white rounded-2xl p-6 shadow-lg cursor-pointer transition-all ${
-              selectedPlan === 'pro' 
-                ? 'ring-2 ring-blue-500 shadow-blue-100' 
-                : 'hover:shadow-xl border border-slate-200'
-            }`}
+            className="rounded-2xl p-6 shadow-lg cursor-pointer transition-all"
+            style={{ 
+              backgroundColor: COLORS.backgroundCard,
+              border: selectedPlan === 'pro' 
+                ? `2px solid ${COLORS.teal}` 
+                : `1px solid ${COLORS.border}`,
+              boxShadow: selectedPlan === 'pro' ? `0 0 30px ${COLORS.teal}30` : undefined
+            }}
             onClick={() => setSelectedPlan('pro')}
           >
             <div className="flex items-center justify-between mb-4">
-              <div className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+              <div 
+                className="inline-block text-xs font-bold px-3 py-1 rounded-full"
+                style={{ backgroundColor: COLORS.teal, color: 'black' }}
+              >
                 MOST POPULAR
               </div>
-              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                selectedPlan === 'pro' ? 'border-blue-500 bg-blue-500' : 'border-slate-300'
-              }`}>
-                {selectedPlan === 'pro' && <Check className="w-4 h-4 text-white" />}
+              <div 
+                className="w-6 h-6 rounded-full border-2 flex items-center justify-center"
+                style={{ 
+                  borderColor: selectedPlan === 'pro' ? COLORS.teal : COLORS.border,
+                  backgroundColor: selectedPlan === 'pro' ? COLORS.teal : 'transparent'
+                }}
+              >
+                {selectedPlan === 'pro' && <Check className="w-4 h-4 text-black" />}
               </div>
             </div>
             
-            <h3 className="text-xl font-bold text-slate-900 mb-1">Pro</h3>
+            <h3 className="text-xl font-bold text-white mb-1">Pro</h3>
             <div className="flex items-baseline gap-1 mb-2">
-              <span className="text-4xl font-bold text-slate-900">$199</span>
-              <span className="text-slate-500">/first year</span>
+              <span className="text-4xl font-bold text-white">$199</span>
+              <span style={{ color: COLORS.textDim }}>/first year</span>
             </div>
-            <p className="text-xs text-slate-500 mb-4">Then $599/year</p>
+            <p className="text-xs mb-4" style={{ color: COLORS.textDim }}>Then $599/year</p>
             
             <div className="space-y-2">
               {proFeatures.map((feature, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                  <span className="text-slate-600 text-sm">{feature}</span>
+                  <Check className="w-4 h-4 flex-shrink-0" style={{ color: COLORS.teal }} />
+                  <span className="text-sm" style={{ color: COLORS.textMuted }}>{feature}</span>
                 </div>
               ))}
             </div>
@@ -321,37 +408,52 @@ export default function Signup() {
 
           {/* Pro+ Plan Card */}
           <div 
-            className={`bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 shadow-lg cursor-pointer transition-all ${
-              selectedPlan === 'pro_plus' 
-                ? 'ring-2 ring-orange-500 shadow-orange-200' 
-                : 'hover:shadow-xl'
-            }`}
+            className="rounded-2xl p-6 shadow-lg cursor-pointer transition-all"
+            style={{ 
+              background: `linear-gradient(135deg, ${COLORS.backgroundCard} 0%, #1a1a1a 100%)`,
+              border: selectedPlan === 'pro_plus' 
+                ? `2px solid ${COLORS.gold}` 
+                : `1px solid ${COLORS.border}`,
+              boxShadow: selectedPlan === 'pro_plus' ? `0 0 30px ${COLORS.gold}30` : undefined
+            }}
             onClick={() => setSelectedPlan('pro_plus')}
           >
             <div className="flex items-center justify-between mb-4">
-              <div className="inline-flex items-center gap-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+              <div 
+                className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full"
+                style={{ backgroundColor: COLORS.gold, color: 'black' }}
+              >
                 <Crown className="w-3 h-3" />
                 BEST VALUE
               </div>
-              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                selectedPlan === 'pro_plus' ? 'border-orange-500 bg-orange-500' : 'border-slate-500'
-              }`}>
-                {selectedPlan === 'pro_plus' && <Check className="w-4 h-4 text-white" />}
+              <div 
+                className="w-6 h-6 rounded-full border-2 flex items-center justify-center"
+                style={{ 
+                  borderColor: selectedPlan === 'pro_plus' ? COLORS.gold : COLORS.border,
+                  backgroundColor: selectedPlan === 'pro_plus' ? COLORS.gold : 'transparent'
+                }}
+              >
+                {selectedPlan === 'pro_plus' && <Check className="w-4 h-4 text-black" />}
               </div>
             </div>
             
             <h3 className="text-xl font-bold text-white mb-1">Pro+</h3>
             <div className="flex items-baseline gap-1 mb-2">
               <span className="text-4xl font-bold text-white">$599</span>
-              <span className="text-slate-400">/first year</span>
+              <span style={{ color: COLORS.textDim }}>/first year</span>
             </div>
-            <p className="text-xs text-slate-400 mb-4">Then $1,299/year</p>
+            <p className="text-xs mb-4" style={{ color: COLORS.textDim }}>Then $1,399/year</p>
             
             <div className="space-y-2">
               {proPlusFeatures.map((feature, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-orange-400 flex-shrink-0" />
-                  <span className={`text-sm ${i === 0 ? 'text-orange-400 font-semibold' : 'text-slate-300'}`}>{feature}</span>
+                  <Check className="w-4 h-4 flex-shrink-0" style={{ color: COLORS.gold }} />
+                  <span 
+                    className={`text-sm ${i === 0 ? 'font-semibold' : ''}`}
+                    style={{ color: i === 0 ? COLORS.gold : COLORS.textMuted }}
+                  >
+                    {feature}
+                  </span>
                 </div>
               ))}
             </div>
@@ -362,28 +464,34 @@ export default function Signup() {
         <div className="text-center">
           <Button
             size="lg"
-            className={`px-12 py-6 text-lg shadow-xl transition-all hover:scale-[1.02] ${
-              selectedPlan === 'pro_plus'
-                ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-orange-500/30'
-                : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-blue-500/30'
-            }`}
+            className="px-12 py-6 text-lg shadow-xl transition-all hover:scale-[1.02] font-semibold"
+            style={{ 
+              background: selectedPlan === 'pro_plus'
+                ? `linear-gradient(135deg, ${COLORS.gold} 0%, ${COLORS.goldLight} 100%)`
+                : `linear-gradient(135deg, ${COLORS.teal} 0%, ${COLORS.tealDark} 100%)`,
+              color: 'black',
+              boxShadow: selectedPlan === 'pro_plus' 
+                ? `0 10px 30px ${COLORS.gold}30`
+                : `0 10px 30px ${COLORS.teal}30`
+            }}
             onClick={() => {
               // Redirect to Stripe checkout
               window.location.href = `/?checkout=${selectedPlan}`;
             }}
           >
-            Continue with {selectedPlan === 'pro_plus' ? 'Pro+' : 'Pro'} - ${selectedPlan === 'pro_plus' ? '499' : '99'} first year
+            Continue with {selectedPlan === 'pro_plus' ? 'Pro+' : 'Pro'} - ${selectedPlan === 'pro_plus' ? '599' : '199'} first year
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
           
-          <p className="text-slate-500 text-sm mt-4">
+          <p className="text-sm mt-4" style={{ color: COLORS.textDim }}>
             30-day money-back guarantee. No questions asked.
           </p>
 
           <Button
             type="button"
             variant="link"
-            className="mt-4 p-0 h-auto text-slate-600 hover:text-slate-900"
+            className="mt-4 p-0 h-auto"
+            style={{ color: COLORS.textMuted }}
             onClick={() => setLocation("/login")}
           >
             Already have an account? Sign in

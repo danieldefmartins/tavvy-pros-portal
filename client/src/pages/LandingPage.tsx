@@ -46,6 +46,23 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+// New brand colors from logo
+const COLORS = {
+  background: '#000000',
+  backgroundAlt: '#0A0A0A',
+  backgroundCard: '#111111',
+  teal: '#00CED1',
+  tealDark: '#00A5A8',
+  gold: '#D4A84B',
+  goldLight: '#E5B84D',
+  blue: '#3B82F6',
+  green: '#10B981',
+  text: '#FFFFFF',
+  textMuted: '#9CA3AF',
+  textDim: '#6B7280',
+  border: '#1F1F1F',
+};
+
 export default function LandingPage() {
   const [, setLocation] = useLocation();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -188,9 +205,9 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f9f7f2]">
+    <div className="min-h-screen" style={{ backgroundColor: COLORS.background }}>
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f172a] shadow-lg">
+      <nav className="fixed top-0 left-0 right-0 z-50 shadow-lg" style={{ backgroundColor: COLORS.background, borderBottom: `1px solid ${COLORS.border}` }}>
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-1">
             <img 
@@ -198,18 +215,22 @@ export default function LandingPage() {
               alt="Tavvy" 
               className="h-9 w-auto"
             />
-            <span className="text-orange-400 font-semibold text-lg">Pros</span>
+            <span style={{ color: COLORS.gold }} className="font-semibold text-lg">Pros</span>
           </div>
           <div className="flex gap-3">
             <Button
               variant="ghost"
-              className="text-slate-300 hover:text-white hover:bg-white/10"
+              className="hover:bg-white/10"
+              style={{ color: COLORS.textMuted }}
               onClick={() => setLocation("/login")}
             >
               Sign In
             </Button>
             <Button
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-500/25"
+              className="text-black font-semibold shadow-lg"
+              style={{ 
+                background: `linear-gradient(135deg, ${COLORS.teal} 0%, ${COLORS.gold} 100%)`,
+              }}
               onClick={() => scrollToSignup()}
             >
               Get Started
@@ -219,22 +240,32 @@ export default function LandingPage() {
       </nav>
 
       {/* Premium Early Adopter Banner - Fixed at top */}
-      <div className="fixed top-[60px] left-0 right-0 z-40 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white py-3 px-4 shadow-xl border-b border-orange-500/30">
+      <div 
+        className="fixed top-[60px] left-0 right-0 z-40 py-3 px-4 shadow-xl"
+        style={{ 
+          backgroundColor: COLORS.backgroundAlt,
+          borderBottom: `1px solid ${COLORS.gold}30`
+        }}
+      >
         <div className="container mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6">
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center justify-center w-8 h-8 bg-orange-500 rounded-full animate-pulse">
-              <Crown className="w-4 h-4 text-white" />
+            <div 
+              className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full animate-pulse"
+              style={{ backgroundColor: COLORS.gold }}
+            >
+              <Crown className="w-4 h-4 text-black" />
             </div>
             <div className="text-center sm:text-left">
-              <span className="text-orange-400 font-bold text-xs uppercase tracking-wider">Founding Pro Pricing</span>
+              <span style={{ color: COLORS.gold }} className="font-bold text-xs uppercase tracking-wider">Founding Pro Pricing</span>
               <div className="flex items-center gap-2">
                 <span className="font-medium text-sm md:text-base text-white">Only</span>
                 <span 
-                  className={`font-black text-2xl md:text-3xl text-orange-400 inline-block transition-all duration-500 ${
-                    isAnimating ? 'scale-110 text-yellow-400' : ''
+                  className={`font-black text-2xl md:text-3xl inline-block transition-all duration-500 ${
+                    isAnimating ? 'scale-110' : ''
                   }`}
                   style={{ 
-                    textShadow: '0 0 20px rgba(251, 146, 60, 0.5)',
+                    color: isAnimating ? COLORS.teal : COLORS.gold,
+                    textShadow: `0 0 20px ${COLORS.gold}50`,
                     fontVariantNumeric: 'tabular-nums'
                   }}
                 >
@@ -244,44 +275,66 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          <div className="hidden md:block h-8 w-px bg-slate-600" />
+          <div className="hidden md:block h-8 w-px" style={{ backgroundColor: COLORS.border }} />
           <div className="hidden md:block text-center">
-            <p className="text-yellow-400 font-semibold text-sm">$199 for your first 12 months</p>
-            <p className="text-slate-400 text-xs">Then regular price. Cancel anytime.</p>
+            <p style={{ color: COLORS.teal }} className="font-semibold text-sm">$199 for your first 12 months</p>
+            <p style={{ color: COLORS.textDim }} className="text-xs">Then regular price. Cancel anytime.</p>
           </div>
         </div>
       </div>
 
       {/* SECTION 1: The Hook (Above the Fold) */}
       <section className="pt-36 pb-8 px-4 relative overflow-hidden">
-        <div className="absolute top-20 right-0 w-96 h-96 bg-gradient-to-br from-blue-100 to-orange-100 rounded-full blur-3xl opacity-60" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-orange-100 to-blue-100 rounded-full blur-3xl opacity-50" />
+        {/* Gradient orbs matching logo colors */}
+        <div 
+          className="absolute top-20 right-0 w-96 h-96 rounded-full blur-3xl opacity-20"
+          style={{ background: `radial-gradient(circle, ${COLORS.teal} 0%, transparent 70%)` }}
+        />
+        <div 
+          className="absolute bottom-0 left-0 w-80 h-80 rounded-full blur-3xl opacity-20"
+          style={{ background: `radial-gradient(circle, ${COLORS.gold} 0%, transparent 70%)` }}
+        />
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl opacity-10"
+          style={{ background: `radial-gradient(circle, ${COLORS.blue} 0%, transparent 70%)` }}
+        />
         
         <div className="container mx-auto max-w-4xl relative z-10">
           <div className="text-center">
             {/* Founding Pro Pricing Badge */}
-            <div className="inline-flex items-center gap-2 bg-orange-500/20 text-orange-600 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-orange-500/30">
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6"
+              style={{ 
+                backgroundColor: `${COLORS.gold}20`,
+                color: COLORS.gold,
+                border: `1px solid ${COLORS.gold}30`
+              }}
+            >
               <Crown className="w-4 h-4" />
               Founding Pro Pricing
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               Stop Buying Leads.<br />
-              <span className="text-blue-600">Start Winning Jobs.</span>
+              <span style={{ color: COLORS.teal }}>Start Winning Jobs.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto leading-relaxed" style={{ color: COLORS.textMuted }}>
               $199 for your first 12 months. Then regular price.<br />
-              <span className="text-slate-500">No lead fees. No bidding wars.</span>
+              <span style={{ color: COLORS.textDim }}>No lead fees. No bidding wars.</span>
             </p>
             <Button
               size="lg"
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-lg px-10 py-7 shadow-xl shadow-orange-500/30"
+              className="text-black text-lg px-10 py-7 shadow-xl font-semibold"
+              style={{ 
+                background: `linear-gradient(135deg, ${COLORS.teal} 0%, ${COLORS.gold} 100%)`,
+                boxShadow: `0 10px 40px ${COLORS.teal}30`
+              }}
               onClick={() => scrollToSignup()}
             >
               Get Started — Plans from $199
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            <p className="text-slate-500 text-sm mt-4">
+            <p style={{ color: COLORS.textDim }} className="text-sm mt-4">
               Intro rate applies to your first 12 months. Renews at the regular rate unless canceled.
             </p>
           </div>
@@ -289,10 +342,16 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 2: Decision Block */}
-      <section className="py-12 px-4 bg-white">
+      <section className="py-12 px-4" style={{ backgroundColor: COLORS.backgroundAlt }}>
         <div className="container mx-auto max-w-3xl">
-          <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-3xl p-8 md:p-12 border border-blue-100">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 text-center mb-8">
+          <div 
+            className="rounded-3xl p-8 md:p-12"
+            style={{ 
+              backgroundColor: COLORS.backgroundCard,
+              border: `1px solid ${COLORS.teal}30`
+            }}
+          >
+            <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">
               Is Tavvy Pro Right For You?
             </h2>
             
@@ -303,14 +362,18 @@ export default function LandingPage() {
                 "You want predictable costs, not surprise bills",
                 "You believe one bad review shouldn't define your business",
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 bg-white rounded-xl p-4 shadow-sm">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
-                  <span className="text-slate-700 font-medium">{item}</span>
+                <div 
+                  key={i} 
+                  className="flex items-center gap-3 rounded-xl p-4"
+                  style={{ backgroundColor: COLORS.background }}
+                >
+                  <CheckCircle2 className="w-6 h-6 flex-shrink-0" style={{ color: COLORS.green }} />
+                  <span style={{ color: COLORS.textMuted }} className="font-medium">{item}</span>
                 </div>
               ))}
             </div>
             
-            <p className="text-center text-xl font-bold text-blue-600">
+            <p className="text-center text-xl font-bold" style={{ color: COLORS.teal }}>
               Then Tavvy is built for you.
             </p>
           </div>
@@ -318,58 +381,75 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 3: ROI Callout */}
-      <section className="py-12 px-4 bg-gradient-to-r from-green-600 to-emerald-600">
-        <div className="container mx-auto max-w-4xl text-center text-white">
+      <section 
+        className="py-12 px-4"
+        style={{ 
+          background: `linear-gradient(135deg, ${COLORS.teal} 0%, ${COLORS.tealDark} 100%)`
+        }}
+      >
+        <div className="container mx-auto max-w-4xl text-center text-black">
           <h2 className="text-2xl md:text-4xl font-bold mb-4">
             If Tavvy Gets You Just ONE Job This Year, It Pays For Itself.
           </h2>
-          <p className="text-xl text-green-100">
+          <p className="text-xl opacity-80">
             Everything else is pure profit.
           </p>
         </div>
       </section>
 
       {/* SECTION 4: Pricing Table */}
-      <section id="pricing" className="py-16 px-4 bg-[#f9f7f2]">
+      <section id="pricing" className="py-16 px-4" style={{ backgroundColor: COLORS.background }}>
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-4"
+              style={{ 
+                backgroundColor: `${COLORS.gold}20`,
+                color: COLORS.gold
+              }}
+            >
               <Crown className="w-4 h-4" />
               Founding Pro Pricing
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
               Lock In Your First-Year Rate
             </h2>
-            <p className="text-lg text-slate-600 mb-4">
+            <p className="text-lg mb-4" style={{ color: COLORS.textMuted }}>
               This exclusive pricing is only available to our first 1,000 professionals
             </p>
-            <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-full text-sm">
-              <span className="font-bold text-orange-400">{spotsLeft.toLocaleString()}</span>
-              <span>spots left</span>
-              <span className="text-slate-400">|</span>
-              <span className="text-yellow-400">Price goes up 5x after</span>
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm"
+              style={{ backgroundColor: COLORS.backgroundCard }}
+            >
+              <span className="font-bold" style={{ color: COLORS.gold }}>{spotsLeft.toLocaleString()}</span>
+              <span className="text-white">spots left</span>
+              <span style={{ color: COLORS.textDim }}>|</span>
+              <span style={{ color: COLORS.teal }}>Price goes up 5x after</span>
             </div>
           </div>
 
           {/* Billing Toggle */}
           <div className="flex justify-center mb-8">
-            <div className="bg-white rounded-full p-1 shadow-md border border-slate-200">
+            <div 
+              className="rounded-full p-1 shadow-md"
+              style={{ backgroundColor: COLORS.backgroundCard, border: `1px solid ${COLORS.border}` }}
+            >
               <button
-                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                  billingCycle === 'yearly' 
-                    ? 'bg-slate-900 text-white shadow-sm' 
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`px-6 py-2 rounded-full text-sm font-medium transition-all`}
+                style={{ 
+                  backgroundColor: billingCycle === 'yearly' ? COLORS.teal : 'transparent',
+                  color: billingCycle === 'yearly' ? 'black' : COLORS.textMuted
+                }}
                 onClick={() => setBillingCycle('yearly')}
               >
-                Yearly <span className="text-green-400 text-xs ml-1">Save $$$</span>
+                Yearly <span style={{ color: billingCycle === 'yearly' ? 'black' : COLORS.green }} className="text-xs ml-1">Save $$$</span>
               </button>
               <button
-                className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                  billingCycle === 'monthly' 
-                    ? 'bg-slate-900 text-white shadow-sm' 
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`px-6 py-2 rounded-full text-sm font-medium transition-all`}
+                style={{ 
+                  backgroundColor: billingCycle === 'monthly' ? COLORS.teal : 'transparent',
+                  color: billingCycle === 'monthly' ? 'black' : COLORS.textMuted
+                }}
                 onClick={() => setBillingCycle('monthly')}
               >
                 Monthly
@@ -379,35 +459,47 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Pro Plan */}
-            <Card className="bg-white border-2 border-slate-200 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
+            <Card 
+              className="shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1"
+              style={{ 
+                backgroundColor: COLORS.backgroundCard,
+                border: `2px solid ${COLORS.border}`
+              }}
+            >
               <CardContent className="p-8">
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">Pro</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">Pro</h3>
                 
                 {billingCycle === 'yearly' ? (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-2xl text-slate-400 line-through">$599</span>
-                      <span className="text-5xl font-bold text-slate-900">$199</span>
+                      <span className="text-2xl line-through" style={{ color: COLORS.textDim }}>$599</span>
+                      <span className="text-5xl font-bold text-white">$199</span>
                     </div>
-                    <p className="text-slate-600 text-sm mb-2">for your first year</p>
-                    <p className="text-slate-500 text-sm mb-2">Then $599/year</p>
-                    <div className="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full mb-4">
+                    <p style={{ color: COLORS.textMuted }} className="text-sm mb-2">for your first year</p>
+                    <p style={{ color: COLORS.textDim }} className="text-sm mb-2">Then $599/year</p>
+                    <div 
+                      className="inline-block text-sm font-medium px-3 py-1 rounded-full mb-4"
+                      style={{ backgroundColor: `${COLORS.green}20`, color: COLORS.green }}
+                    >
                       Founders Discount: Save $400
                     </div>
-                    <p className="text-slate-500 text-xs mb-4">
-                      <span className="font-bold text-orange-600">{spotsLeft.toLocaleString()}</span> of 1,000 spots left
+                    <p style={{ color: COLORS.textDim }} className="text-xs mb-4">
+                      <span className="font-bold" style={{ color: COLORS.gold }}>{spotsLeft.toLocaleString()}</span> of 1,000 spots left
                     </p>
                   </>
                 ) : (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-2xl text-slate-400 line-through">$59.99</span>
-                      <span className="text-5xl font-bold text-slate-900">$49.99</span>
-                      <span className="text-slate-500">/month</span>
+                      <span className="text-2xl line-through" style={{ color: COLORS.textDim }}>$59.99</span>
+                      <span className="text-5xl font-bold text-white">$49.99</span>
+                      <span style={{ color: COLORS.textDim }}>/month</span>
                     </div>
-                    <p className="text-slate-600 text-sm mb-2">for your first 12 months</p>
-                    <p className="text-slate-500 text-sm mb-2">Then $59.99/mo</p>
-                    <div className="inline-block bg-green-100 text-green-700 text-sm font-medium px-3 py-1 rounded-full mb-4">
+                    <p style={{ color: COLORS.textMuted }} className="text-sm mb-2">for your first 12 months</p>
+                    <p style={{ color: COLORS.textDim }} className="text-sm mb-2">Then $59.99/mo</p>
+                    <div 
+                      className="inline-block text-sm font-medium px-3 py-1 rounded-full mb-4"
+                      style={{ backgroundColor: `${COLORS.green}20`, color: COLORS.green }}
+                    >
                       Founders Discount: Save $10/mo
                     </div>
                   </>
@@ -416,20 +508,24 @@ export default function LandingPage() {
                 <ul className="space-y-3 mb-8">
                   {proFeatures.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-slate-700">{feature}</span>
+                      <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: COLORS.teal }} />
+                      <span style={{ color: COLORS.textMuted }}>{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Button
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white py-6 text-lg"
+                  className="w-full py-6 text-lg font-semibold"
+                  style={{ 
+                    backgroundColor: COLORS.teal,
+                    color: 'black'
+                  }}
                   onClick={() => handleGetStarted('pro', billingCycle)}
                   disabled={isLoading && loadingPlan === `pro_${billingCycle}`}
                 >
                   {isLoading && loadingPlan === `pro_${billingCycle}` ? 'Processing...' : `Get Pro - ${billingCycle === 'yearly' ? '$199/year' : '$49.99/mo'}`}
                 </Button>
-                <p className="text-center text-slate-500 text-xs mt-3">
+                <p className="text-center text-xs mt-3" style={{ color: COLORS.textDim }}>
                   {billingCycle === 'yearly' 
                     ? 'No contract. Renews at $599/year. Cancel anytime.' 
                     : 'No contract. Renews at $59.99/mo after 12 months. Cancel anytime.'}
@@ -438,9 +534,18 @@ export default function LandingPage() {
             </Card>
 
             {/* Pro+ Plan */}
-            <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-orange-500 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 relative overflow-hidden">
+            <Card 
+              className="shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 relative overflow-hidden"
+              style={{ 
+                background: `linear-gradient(135deg, ${COLORS.backgroundCard} 0%, #1a1a1a 100%)`,
+                border: `2px solid ${COLORS.gold}`
+              }}
+            >
               <div className="absolute top-4 left-4">
-                <span className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                <span 
+                  className="text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"
+                  style={{ backgroundColor: COLORS.gold, color: 'black' }}
+                >
                   <Crown className="w-3 h-3" /> BEST VALUE
                 </span>
               </div>
@@ -450,28 +555,34 @@ export default function LandingPage() {
                 {billingCycle === 'yearly' ? (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-2xl text-slate-500 line-through">$1,399</span>
+                      <span className="text-2xl line-through" style={{ color: COLORS.textDim }}>$1,399</span>
                       <span className="text-5xl font-bold">$599</span>
                     </div>
-                    <p className="text-slate-400 text-sm mb-2">for your first year</p>
-                    <p className="text-slate-500 text-sm mb-2">Then $1,399/year</p>
-                    <div className="inline-block bg-orange-500 text-white text-sm font-medium px-3 py-1 rounded-full mb-4">
+                    <p style={{ color: COLORS.textMuted }} className="text-sm mb-2">for your first year</p>
+                    <p style={{ color: COLORS.textDim }} className="text-sm mb-2">Then $1,399/year</p>
+                    <div 
+                      className="inline-block text-sm font-medium px-3 py-1 rounded-full mb-4"
+                      style={{ backgroundColor: COLORS.gold, color: 'black' }}
+                    >
                       Founders Discount: Save $800
                     </div>
-                    <p className="text-slate-400 text-xs mb-4">
-                      <span className="font-bold text-orange-400">{spotsLeft.toLocaleString()}</span> of 1,000 spots left
+                    <p style={{ color: COLORS.textMuted }} className="text-xs mb-4">
+                      <span className="font-bold" style={{ color: COLORS.gold }}>{spotsLeft.toLocaleString()}</span> of 1,000 spots left
                     </p>
                   </>
                 ) : (
                   <>
                     <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-2xl text-slate-500 line-through">$119.99</span>
+                      <span className="text-2xl line-through" style={{ color: COLORS.textDim }}>$119.99</span>
                       <span className="text-5xl font-bold">$69.99</span>
-                      <span className="text-slate-400">/month</span>
+                      <span style={{ color: COLORS.textMuted }}>/month</span>
                     </div>
-                    <p className="text-slate-400 text-sm mb-2">for your first 12 months</p>
-                    <p className="text-slate-500 text-sm mb-2">Then $119.99/mo</p>
-                    <div className="inline-block bg-orange-500 text-white text-sm font-medium px-3 py-1 rounded-full mb-4">
+                    <p style={{ color: COLORS.textMuted }} className="text-sm mb-2">for your first 12 months</p>
+                    <p style={{ color: COLORS.textDim }} className="text-sm mb-2">Then $119.99/mo</p>
+                    <div 
+                      className="inline-block text-sm font-medium px-3 py-1 rounded-full mb-4"
+                      style={{ backgroundColor: COLORS.gold, color: 'black' }}
+                    >
                       Founders Discount: Save $50/mo
                     </div>
                   </>
@@ -480,27 +591,33 @@ export default function LandingPage() {
                 <ul className="space-y-3 mb-8">
                   {proPlusFeatures.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
-                      <span className={i === 0 ? "text-orange-400 font-medium" : "text-slate-300"}>{feature}</span>
+                      <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: COLORS.gold }} />
+                      <span style={{ color: i === 0 ? COLORS.gold : COLORS.textMuted }} className={i === 0 ? "font-medium" : ""}>{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Button
-                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-6 text-lg shadow-lg shadow-orange-500/30"
+                  className="w-full py-6 text-lg shadow-lg font-semibold"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${COLORS.gold} 0%, ${COLORS.goldLight} 100%)`,
+                    color: 'black',
+                    boxShadow: `0 10px 30px ${COLORS.gold}30`
+                  }}
                   onClick={() => handleGetStarted('pro_plus', billingCycle)}
                   disabled={isLoading && loadingPlan === `pro_plus_${billingCycle}`}
                 >
                   {isLoading && loadingPlan === `pro_plus_${billingCycle}` ? 'Processing...' : `Get Pro+ - ${billingCycle === 'yearly' ? '$599/year' : '$69.99/mo'}`}
                 </Button>
-                <p className="text-center text-slate-400 text-xs mt-3">
+                <p className="text-center text-xs mt-3" style={{ color: COLORS.textMuted }}>
                   {billingCycle === 'yearly' 
                     ? 'No contract. Renews at $1,399/year. Cancel anytime.' 
                     : 'No contract. Renews at $119.99/mo after 12 months. Cancel anytime.'}
                 </p>
                 
                 <button 
-                  className="w-full text-center text-orange-400 text-sm mt-4 hover:underline"
+                  className="w-full text-center text-sm mt-4 hover:underline"
+                  style={{ color: COLORS.gold }}
                   onClick={() => setShowProPlusModal(true)}
                 >
                   See Full Pro+ Features →
@@ -512,12 +629,18 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 5: Risk Reversal Block */}
-      <section className="py-12 px-4 bg-white">
+      <section className="py-12 px-4" style={{ backgroundColor: COLORS.backgroundAlt }}>
         <div className="container mx-auto max-w-3xl">
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 md:p-12 border border-green-200">
+          <div 
+            className="rounded-3xl p-8 md:p-12"
+            style={{ 
+              backgroundColor: COLORS.backgroundCard,
+              border: `1px solid ${COLORS.green}30`
+            }}
+          >
             <div className="text-center mb-8">
-              <ShieldCheck className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
+              <ShieldCheck className="w-16 h-16 mx-auto mb-4" style={{ color: COLORS.green }} />
+              <h2 className="text-2xl md:text-3xl font-bold text-white">
                 Zero Risk to Try Tavvy
               </h2>
             </div>
@@ -529,9 +652,13 @@ export default function LandingPage() {
                 { icon: Shield, text: "No Hidden Fees" },
                 { icon: DollarSign, text: "No Per-Lead Charges — Ever" },
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 bg-white rounded-xl p-4 shadow-sm">
-                  <item.icon className="w-6 h-6 text-green-600 flex-shrink-0" />
-                  <span className="font-medium text-slate-700">{item.text}</span>
+                <div 
+                  key={i} 
+                  className="flex items-center gap-3 rounded-xl p-4"
+                  style={{ backgroundColor: COLORS.background }}
+                >
+                  <item.icon className="w-6 h-6 flex-shrink-0" style={{ color: COLORS.green }} />
+                  <span className="font-medium" style={{ color: COLORS.textMuted }}>{item.text}</span>
                 </div>
               ))}
             </div>
@@ -540,13 +667,13 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 6: How It Works (Simplified 3-Step) */}
-      <section id="how-it-works" className="py-16 px-4 bg-[#f9f7f2]">
+      <section id="how-it-works" className="py-16 px-4" style={{ backgroundColor: COLORS.background }}>
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
               How It Works
             </h2>
-            <p className="text-lg text-slate-600">
+            <p className="text-lg" style={{ color: COLORS.textMuted }}>
               Simple, fair, and built for professionals
             </p>
           </div>
@@ -573,12 +700,18 @@ export default function LandingPage() {
               },
             ].map((item, i) => (
               <div key={i} className="text-center">
-                <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-600/30">
-                  <item.icon className="w-8 h-8 text-white" />
+                <div 
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"
+                  style={{ 
+                    backgroundColor: COLORS.teal,
+                    boxShadow: `0 10px 30px ${COLORS.teal}30`
+                  }}
+                >
+                  <item.icon className="w-8 h-8 text-black" />
                 </div>
-                <div className="text-sm font-bold text-blue-600 mb-2">STEP {item.step}</div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">{item.title}</h3>
-                <p className="text-slate-600">{item.desc}</p>
+                <div className="text-sm font-bold mb-2" style={{ color: COLORS.teal }}>STEP {item.step}</div>
+                <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
+                <p style={{ color: COLORS.textMuted }}>{item.desc}</p>
               </div>
             ))}
           </div>
@@ -586,21 +719,24 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 7: Social Proof (Testimonial) */}
-      <section className="py-16 px-4 bg-white">
+      <section className="py-16 px-4" style={{ backgroundColor: COLORS.backgroundAlt }}>
         <div className="container mx-auto max-w-3xl">
-          <Card className="bg-gradient-to-br from-slate-50 to-blue-50 border-none shadow-xl">
+          <Card 
+            className="border-none shadow-xl"
+            style={{ backgroundColor: COLORS.backgroundCard }}
+          >
             <CardContent className="p-8 md:p-12">
               <div className="flex justify-center mb-6">
                 {[1,2,3,4,5].map(i => (
-                  <Star key={i} className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+                  <Star key={i} className="w-6 h-6" style={{ color: COLORS.gold, fill: COLORS.gold }} />
                 ))}
               </div>
-              <blockquote className="text-xl md:text-2xl text-slate-700 text-center mb-6 leading-relaxed">
+              <blockquote className="text-xl md:text-2xl text-center mb-6 leading-relaxed" style={{ color: COLORS.textMuted }}>
                 "I was spending $800/month on lead generation platforms. Now I pay $199 for my first year and get better quality leads. The fair distribution means I'm not racing against 10 other pros for the same job."
               </blockquote>
               <div className="text-center">
-                <p className="font-bold text-slate-900">Mike R.</p>
-                <p className="text-slate-500">Service Professional, Austin TX</p>
+                <p className="font-bold text-white">Mike R.</p>
+                <p style={{ color: COLORS.textDim }}>Service Professional, Austin TX</p>
               </div>
             </CardContent>
           </Card>
@@ -608,29 +744,41 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 8: Why We're Different (Condensed) */}
-      <section className="py-16 px-4 bg-slate-900 text-white">
+      <section className="py-16 px-4" style={{ backgroundColor: COLORS.background }}>
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
               Why We're Different
             </h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Fair Reviews */}
-            <div className="bg-white/5 rounded-2xl p-8 border border-white/10">
-              <Shield className="w-12 h-12 text-blue-400 mb-4" />
-              <h3 className="text-xl font-bold mb-4">Fair Reviews</h3>
-              <p className="text-slate-300 leading-relaxed">
+            <div 
+              className="rounded-2xl p-8"
+              style={{ 
+                backgroundColor: COLORS.backgroundCard,
+                border: `1px solid ${COLORS.border}`
+              }}
+            >
+              <Shield className="w-12 h-12 mb-4" style={{ color: COLORS.teal }} />
+              <h3 className="text-xl font-bold mb-4 text-white">Fair Reviews</h3>
+              <p className="leading-relaxed" style={{ color: COLORS.textMuted }}>
                 One bad day shouldn't haunt you forever. On Tavvy, non-recurring negative reviews fade after 6 months. Your profile reflects who you are <strong className="text-white">now</strong>, not one mistake from years ago.
               </p>
             </div>
 
             {/* Built by Pros, For Pros */}
-            <div className="bg-white/5 rounded-2xl p-8 border border-white/10">
-              <Handshake className="w-12 h-12 text-orange-400 mb-4" />
-              <h3 className="text-xl font-bold mb-4">Built by Pros, For Pros</h3>
-              <p className="text-slate-300 leading-relaxed">
+            <div 
+              className="rounded-2xl p-8"
+              style={{ 
+                backgroundColor: COLORS.backgroundCard,
+                border: `1px solid ${COLORS.border}`
+              }}
+            >
+              <Handshake className="w-12 h-12 mb-4" style={{ color: COLORS.gold }} />
+              <h3 className="text-xl font-bold mb-4 text-white">Built by Pros, For Pros</h3>
+              <p className="leading-relaxed" style={{ color: COLORS.textMuted }}>
                 Our founding team spent 15+ years as service professionals. We built Tavvy because we got tired of Big Tech platforms extracting every dollar from hardworking pros. We're on <strong className="text-white">your</strong> side.
               </p>
             </div>
@@ -639,19 +787,25 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 9: Pro+ Upsell (Simplified) */}
-      <section className="py-16 px-4 bg-gradient-to-br from-orange-500 to-orange-600">
-        <div className="container mx-auto max-w-4xl text-center text-white">
+      <section 
+        className="py-16 px-4"
+        style={{ 
+          background: `linear-gradient(135deg, ${COLORS.gold} 0%, ${COLORS.goldLight} 100%)`
+        }}
+      >
+        <div className="container mx-auto max-w-4xl text-center text-black">
           <Crown className="w-16 h-16 mx-auto mb-6 opacity-90" />
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Pro+ Replaces Multiple Tools You Already Pay For
           </h2>
-          <p className="text-xl text-orange-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl opacity-80 mb-8 max-w-2xl mx-auto">
             CRM, Invoicing, Scheduling, Email Marketing, Reputation Management — all included. Save up to $8,800/year.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              className="bg-white text-orange-600 hover:bg-orange-50 text-lg px-8 py-6 shadow-xl"
+              className="text-lg px-8 py-6 shadow-xl font-semibold"
+              style={{ backgroundColor: 'black', color: COLORS.gold }}
               onClick={() => setShowProPlusModal(true)}
             >
               See Full Pro+ Features
@@ -659,7 +813,12 @@ export default function LandingPage() {
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-white text-white hover:bg-white/10 text-lg px-8 py-6"
+              className="text-lg px-8 py-6 font-semibold"
+              style={{ 
+                border: '2px solid black',
+                color: 'black',
+                backgroundColor: 'transparent'
+              }}
               onClick={() => handleGetStarted('pro_plus', billingCycle)}
             >
               Get Pro+ — $599 first year
@@ -669,9 +828,9 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 px-4 bg-[#f9f7f2]">
+      <section className="py-16 px-4" style={{ backgroundColor: COLORS.backgroundAlt }}>
         <div className="container mx-auto max-w-3xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-slate-900">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
             Frequently Asked Questions
           </h2>
 
@@ -679,21 +838,25 @@ export default function LandingPage() {
             {faqItems.map((item, i) => (
               <div
                 key={i}
-                className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden"
+                className="rounded-xl overflow-hidden"
+                style={{ 
+                  backgroundColor: COLORS.backgroundCard,
+                  border: `1px solid ${COLORS.border}`
+                }}
               >
                 <button
                   className="w-full p-6 text-left flex justify-between items-center gap-4"
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 >
-                  <span className="font-semibold text-slate-900">{item.question}</span>
+                  <span className="font-semibold text-white">{item.question}</span>
                   {openFaq === i ? (
-                    <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                    <ChevronUp className="w-5 h-5 flex-shrink-0" style={{ color: COLORS.textDim }} />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                    <ChevronDown className="w-5 h-5 flex-shrink-0" style={{ color: COLORS.textDim }} />
                   )}
                 </button>
                 {openFaq === i && (
-                  <div className="px-6 pb-6 text-slate-600 leading-relaxed">
+                  <div className="px-6 pb-6 leading-relaxed" style={{ color: COLORS.textMuted }}>
                     {item.answer}
                   </div>
                 )}
@@ -704,68 +867,84 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 10: Final CTA */}
-      <section className="py-20 px-4 bg-slate-900">
+      <section className="py-20 px-4" style={{ backgroundColor: COLORS.background }}>
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Join Tavvy Pros
           </h2>
-          <p className="text-xl text-slate-300 mb-8">
+          <p className="text-xl mb-8" style={{ color: COLORS.textMuted }}>
             Fair leads. Fair reviews. Fair pricing.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              className="bg-white text-slate-900 hover:bg-slate-100 text-lg px-8 py-6 shadow-xl"
+              className="text-lg px-8 py-6 shadow-xl font-semibold"
+              style={{ 
+                backgroundColor: COLORS.teal,
+                color: 'black'
+              }}
               onClick={() => handleGetStarted('pro', billingCycle)}
             >
               Get Pro — $199 first year
             </Button>
             <Button
               size="lg"
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-lg px-8 py-6 shadow-xl shadow-orange-500/30"
+              className="text-lg px-8 py-6 shadow-xl font-semibold"
+              style={{ 
+                background: `linear-gradient(135deg, ${COLORS.gold} 0%, ${COLORS.goldLight} 100%)`,
+                color: 'black',
+                boxShadow: `0 10px 30px ${COLORS.gold}30`
+              }}
               onClick={() => handleGetStarted('pro_plus', billingCycle)}
             >
               Get Pro+ — $599 first year
             </Button>
           </div>
-          <p className="text-slate-500 text-sm mt-4">
+          <p className="text-sm mt-4" style={{ color: COLORS.textDim }}>
             Intro rate applies to your first 12 months. Renews at the regular rate unless canceled.
           </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 bg-slate-950 text-slate-400">
+      <footer className="py-8 px-4" style={{ backgroundColor: COLORS.background, borderTop: `1px solid ${COLORS.border}` }}>
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
               <img src="/tavvy-logo.png" alt="Tavvy" className="h-6 w-auto" />
-              <span className="text-orange-400 font-semibold">Pros</span>
+              <span style={{ color: COLORS.gold }} className="font-semibold">Pros</span>
             </div>
-            <p className="text-sm">© 2026 Tavvy. All rights reserved.</p>
+            <p className="text-sm" style={{ color: COLORS.textDim }}>© 2026 Tavvy. All rights reserved.</p>
           </div>
         </div>
       </footer>
 
       {/* Pro+ Features Modal */}
       {showProPlusModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-slate-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-slate-900 p-6 border-b border-slate-700 flex justify-between items-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div 
+            className="rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            style={{ backgroundColor: COLORS.backgroundCard }}
+          >
+            <div 
+              className="sticky top-0 p-6 flex justify-between items-center"
+              style={{ backgroundColor: COLORS.backgroundCard, borderBottom: `1px solid ${COLORS.border}` }}
+            >
               <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-                <Crown className="w-6 h-6 text-orange-400" />
+                <Crown className="w-6 h-6" style={{ color: COLORS.gold }} />
                 Pro+ Features — 360 For Business CRM
               </h3>
               <button 
                 onClick={() => setShowProPlusModal(false)}
-                className="text-slate-400 hover:text-white"
+                style={{ color: COLORS.textDim }}
+                className="hover:text-white"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
             
             <div className="p-6">
-              <p className="text-slate-300 mb-6">
+              <p className="mb-6" style={{ color: COLORS.textMuted }}>
                 A complete business management platform that helps you capture leads, nurture relationships, and grow your business — all for a fraction of what you'd pay elsewhere.
               </p>
               
@@ -781,19 +960,36 @@ export default function LandingPage() {
                   { icon: Star, title: "Reputation Management", desc: "Auto-request reviews, monitor online reputation." },
                   { icon: Smartphone, title: "Mobile App Access", desc: "Manage your business from anywhere." },
                 ].map((item, i) => (
-                  <div key={i} className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <item.icon className="w-8 h-8 text-orange-400 mb-2" />
+                  <div 
+                    key={i} 
+                    className="rounded-xl p-4"
+                    style={{ 
+                      backgroundColor: COLORS.background,
+                      border: `1px solid ${COLORS.border}`
+                    }}
+                  >
+                    <item.icon className="w-8 h-8 mb-2" style={{ color: COLORS.gold }} />
                     <h4 className="font-bold text-white mb-1">{item.title}</h4>
-                    <p className="text-slate-400 text-sm">{item.desc}</p>
+                    <p className="text-sm" style={{ color: COLORS.textDim }}>{item.desc}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="bg-gradient-to-r from-orange-500/20 to-orange-600/20 border border-orange-500/30 rounded-xl p-6 text-center">
-                <p className="text-orange-400 font-bold text-lg mb-2">$297/month value included FREE with Pro+</p>
-                <p className="text-slate-300 mb-4">Save up to $8,800/year compared to buying these tools separately</p>
+              <div 
+                className="rounded-xl p-6 text-center"
+                style={{ 
+                  background: `linear-gradient(135deg, ${COLORS.gold}20 0%, ${COLORS.goldLight}20 100%)`,
+                  border: `1px solid ${COLORS.gold}30`
+                }}
+              >
+                <p className="font-bold text-lg mb-2" style={{ color: COLORS.gold }}>$297/month value included FREE with Pro+</p>
+                <p className="mb-4" style={{ color: COLORS.textMuted }}>Save up to $8,800/year compared to buying these tools separately</p>
                 <Button
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3"
+                  className="px-8 py-3 font-semibold"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${COLORS.gold} 0%, ${COLORS.goldLight} 100%)`,
+                    color: 'black'
+                  }}
                   onClick={() => {
                     setShowProPlusModal(false);
                     handleGetStarted('pro_plus', billingCycle);
@@ -801,7 +997,7 @@ export default function LandingPage() {
                 >
                   Get Pro+ — $599 first year
                 </Button>
-                <p className="text-slate-400 text-xs mt-3">
+                <p className="text-xs mt-3" style={{ color: COLORS.textDim }}>
                   Renews at $1,399/year after 12 months. Cancel anytime.
                 </p>
               </div>

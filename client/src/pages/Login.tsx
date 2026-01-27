@@ -8,6 +8,17 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
+// Brand colors
+const COLORS = {
+  background: '#000000',
+  backgroundCard: '#111111',
+  teal: '#00CED1',
+  gold: '#D4A84B',
+  border: '#1F1F1F',
+  textMuted: '#9CA3AF',
+  textDim: '#6B7280',
+};
+
 export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -66,8 +77,17 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
-      <Card className="w-full max-w-md bg-slate-800/50 border-slate-700">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ backgroundColor: COLORS.background }}
+    >
+      <Card 
+        className="w-full max-w-md"
+        style={{ 
+          backgroundColor: COLORS.backgroundCard,
+          border: `1px solid ${COLORS.border}`
+        }}
+      >
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
             <img 
@@ -80,14 +100,14 @@ export default function Login() {
             />
           </div>
           <CardTitle className="text-2xl text-white">Tavvy Pros</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription style={{ color: COLORS.textMuted }}>
             Sign in to access your Pro account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-300">
+              <Label htmlFor="email" style={{ color: COLORS.textMuted }}>
                 Email
               </Label>
               <Input
@@ -97,11 +117,16 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
+                style={{ 
+                  backgroundColor: COLORS.background,
+                  borderColor: COLORS.border,
+                  color: 'white'
+                }}
+                className="placeholder:text-gray-500"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-300">
+              <Label htmlFor="password" style={{ color: COLORS.textMuted }}>
                 Password
               </Label>
               <Input
@@ -111,12 +136,21 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
+                style={{ 
+                  backgroundColor: COLORS.background,
+                  borderColor: COLORS.border,
+                  color: 'white'
+                }}
+                className="placeholder:text-gray-500"
               />
             </div>
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold"
+              className="w-full font-semibold"
+              style={{ 
+                background: `linear-gradient(135deg, ${COLORS.teal} 0%, ${COLORS.gold} 100%)`,
+                color: 'black'
+              }}
               disabled={isLoading}
             >
               {isLoading ? "Signing in..." : "Sign In"}
@@ -125,12 +159,13 @@ export default function Login() {
           <div className="mt-4 text-center">
             <a 
               href="/forgot-password" 
-              className="text-sm text-orange-400 hover:text-orange-300 hover:underline"
+              className="text-sm hover:underline"
+              style={{ color: COLORS.teal }}
             >
               Forgot your password?
             </a>
           </div>
-          <p className="mt-4 text-center text-xs text-slate-500">
+          <p className="mt-4 text-center text-xs" style={{ color: COLORS.textDim }}>
             Need an account? Contact Tavvy support.
           </p>
         </CardContent>
