@@ -91,7 +91,7 @@ export default function Login() {
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
             <img 
-              src="/tavvy-logo.png" 
+              src="/tavvy-logo-2.png" 
               alt="Tavvy" 
               className="h-16 w-auto mx-auto"
               onError={(e) => {

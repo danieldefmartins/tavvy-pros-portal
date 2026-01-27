@@ -210,7 +210,7 @@ export default function Signup() {
 
             <div className="flex justify-center mb-4">
               <img 
-                src="/tavvy-logo.png" 
+                src="/tavvy-logo-2.png" 
                 alt="Tavvy" 
                 className="h-12 w-auto"
               />
@@ -350,7 +350,7 @@ export default function Signup() {
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-10">
           <img 
-            src="/tavvy-logo.png" 
+            src="/tavvy-logo-2.png" 
             alt="Tavvy" 
             className="h-12 w-auto mx-auto mb-4"
           />
