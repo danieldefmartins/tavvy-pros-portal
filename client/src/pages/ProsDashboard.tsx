@@ -169,7 +169,7 @@ export default function ProsDashboard() {
 
         {/* New Leads Alert */}
         {leadStats.pending > 0 && (
-          <Card className="mb-6 border-green-200 bg-green-50 cursor-pointer hover:bg-green-100 transition-colors" onClick={() => setLocation('/leads')}>
+          <Card className="mb-6 border-green-200 bg-green-50 cursor-pointer hover:bg-green-100 transition-colors" onClick={() => setLocation('/dashboard')}>
             <CardContent className="py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -294,7 +294,7 @@ export default function ProsDashboard() {
                     <CardTitle>Recent Leads</CardTitle>
                     <CardDescription>Customers looking for your services</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => setLocation('/leads')}>
+                  <Button variant="outline" size="sm" onClick={() => setLocation('/dashboard')}>
                     View All
                     <ExternalLink className="h-4 w-4 ml-2" />
                   </Button>
@@ -312,7 +312,7 @@ export default function ProsDashboard() {
                       <div 
                         key={lead.id} 
                         className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
-                        onClick={() => setLocation(`/leads/${lead.id}`)}
+                        onClick={() => { /* Lead detail - coming soon */ }}
                       >
                         <div className="flex items-center gap-4">
                           <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -384,7 +384,7 @@ export default function ProsDashboard() {
                 <Button 
                   className="w-full justify-between" 
                   variant="outline"
-                  onClick={() => setLocation('/leads')}
+                  onClick={() => setLocation('/dashboard')}
                 >
                   <span className="flex items-center">
                     <TrendingUp className="h-4 w-4 mr-2" />
