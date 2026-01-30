@@ -15,6 +15,9 @@ import DigitalCardEditor from "./pages/DigitalCardEditor";
 import PublicProCard from "./pages/PublicProCard";
 import MessagesPage from "./pages/MessagesPage";
 import AddServiceLocation from "./pages/AddServiceLocation";
+import Pricing from "./pages/Pricing";
+import SubscriptionSuccess from "./pages/SubscriptionSuccess";
+import SubscriptionCancel from "./pages/SubscriptionCancel";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -125,6 +128,19 @@ function Router() {
       {/* Public Pro Card - No auth required */}
       <Route path="/pro/:slug">
         <PublicProCard />
+      </Route>
+      
+      {/* Pricing and Subscription Routes */}
+      <Route path="/pricing">
+        <PublicRoute redirectToDashboard={false}>
+          <Pricing />
+        </PublicRoute>
+      </Route>
+      <Route path="/subscription/success">
+        <SubscriptionSuccess />
+      </Route>
+      <Route path="/subscription/cancel">
+        <SubscriptionCancel />
       </Route>
 
       {/* 404 */}

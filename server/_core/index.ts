@@ -9,6 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { securityHeaders } from "./securityHeaders";
+import { handleStripeWebhook } from "../webhookHandler";
 
 // ============================================================
 // CORS Configuration - Environment-based allowlist
@@ -209,6 +210,14 @@ async function startServer() {
   
   // Apply general rate limiting to all API endpoints
   app.use('/api/trpc', apiRateLimiter);
+  
+  // Stripe webhook - Must be before express.json() middleware
+  // Raw body is needed for webhook signature verification
+  app.post(
+    '/api/webhooks/stripe',
+    express.raw({ type: 'application/json' }),
+    handleStripeWebhook
+  );
   
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);

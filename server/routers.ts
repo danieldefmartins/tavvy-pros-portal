@@ -25,6 +25,18 @@ import {
   signInWithEmail,
   verifySupabaseToken,
 } from "./supabaseAuth";
+import {
+  createCheckoutSession,
+  createCustomerPortalSession,
+  getSubscription,
+  verifyWebhookSignature,
+  handleSubscriptionCreated,
+  handleSubscriptionUpdated,
+  handleSubscriptionDeleted,
+  handlePaymentSucceeded,
+  handlePaymentFailed,
+} from "./stripe";
+import { STRIPE_CONFIG } from "../shared/stripe-config";
 
 // Cookie name for Supabase auth token
 const AUTH_COOKIE_NAME = "tavvy_auth_token";
@@ -417,6 +429,72 @@ export const appRouter = router({
         .orderBy(desc(batchImportJobs.createdAt))
         .limit(20);
     }),
+  }),
+  // Stripe subscription router
+  stripe: router({
+    createCheckout: publicProcedure
+      .input(
+        z.object({
+          plan: z.enum(["pro", "proPlus"]),
+          interval: z.enum(["monthly", "annual"]),
+          couponId: z.string().optional(),
+          email: z.string().email().optional(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        const { plan, interval, couponId, email } = input;
+        
+        // Get price ID from config
+        const priceId = STRIPE_CONFIG.products[plan].prices[interval].id;
+        
+        // Get user email from session or input
+        const customerEmail = email || ctx.user?.email;
+        
+        // Create checkout session
+        const session = await createCheckoutSession({
+          priceId,
+          plan,
+          interval,
+          couponId,
+          customerEmail,
+          userId: ctx.user?.id,
+          successUrl: `${process.env.PUBLIC_URL || 'http://localhost:5000'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${process.env.PUBLIC_URL || 'http://localhost:5000'}/subscription/cancel`,
+        });
+        
+        return {
+          sessionId: session.id,
+          url: session.url,
+        };
+      }),
+    
+    createPortal: protectedProcedure
+      .input(
+        z.object({
+          customerId: z.string(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        const session = await createCustomerPortalSession(
+          input.customerId,
+          `${process.env.PUBLIC_URL || 'http://localhost:5000'}/subscription`
+        );
+        
+        return {
+          url: session.url,
+        };
+      }),
+    
+    getSubscription: protectedProcedure
+      .input(
+        z.object({
+          subscriptionId: z.string(),
+        })
+      )
+      .query(async ({ input }) => {
+        const subscription = await getSubscription(input.subscriptionId);
+        return subscription;
+      }),
   }),
 });
 
