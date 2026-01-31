@@ -64,13 +64,10 @@ export default function Signup() {
       return;
     }
 
+    // Don't set subscription details here - webhook will handle it after payment
     const { data, error: signUpError } = await signUpWithEmail(email, password, {
       full_name: fullName,
-      is_pro: true,
-      portal_type: 'pros',
-      subscription_status: 'active',
-      subscription_plan: selectedPlan,
-      subscription_tier: selectedPlan === 'pro_plus' ? 'pro_plus' : 'pro',
+      // Subscription details will be set by Stripe webhook after payment
     });
 
     if (signUpError) {
@@ -342,7 +339,15 @@ export default function Signup() {
     );
   }
 
-  // Default view - Plan selection before payment
+  // Default view - redirect to landing page pricing
+  // Users should not be able to access signup without payment
+  useEffect(() => {
+    if (!paymentSuccess) {
+      setLocation('/#pricing');
+    }
+  }, [paymentSuccess, setLocation]);
+
+  // If no payment success, show loading while redirecting
   return (
     <div 
       className="min-h-screen py-12 px-4"
