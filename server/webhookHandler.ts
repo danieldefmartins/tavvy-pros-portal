@@ -6,14 +6,15 @@
 
 import type { Request, Response } from 'express';
 import Stripe from 'stripe';
+import { verifyWebhookSignature } from './stripe';
 import {
-  verifyWebhookSignature,
+  handleCheckoutSessionCompleted,
   handleSubscriptionCreated,
   handleSubscriptionUpdated,
   handleSubscriptionDeleted,
   handlePaymentSucceeded,
   handlePaymentFailed,
-} from './stripe';
+} from './stripeWebhookHandlers';
 
 /**
  * Handle incoming Stripe webhooks
@@ -56,6 +57,10 @@ export async function handleStripeWebhook(req: Request, res: Response) {
   try {
     // Handle different event types
     switch (event.type) {
+      case 'checkout.session.completed':
+        await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session);
+        break;
+
       case 'customer.subscription.created':
         await handleSubscriptionCreated(event.data.object as Stripe.Subscription);
         break;

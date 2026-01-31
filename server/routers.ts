@@ -458,6 +458,7 @@ export const appRouter = router({
           couponId,
           customerEmail,
           userId: ctx.user?.id,
+          portalType: 'pros',
           successUrl: `${process.env.PUBLIC_URL || 'http://localhost:5000'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: `${process.env.PUBLIC_URL || 'http://localhost:5000'}/subscription/cancel`,
         });

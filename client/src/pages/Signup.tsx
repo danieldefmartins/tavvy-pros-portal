@@ -67,6 +67,7 @@ export default function Signup() {
     const { data, error: signUpError } = await signUpWithEmail(email, password, {
       full_name: fullName,
       is_pro: true,
+      portal_type: 'pros',
       subscription_status: 'active',
       subscription_plan: selectedPlan,
       subscription_tier: selectedPlan === 'pro_plus' ? 'pro_plus' : 'pro',
