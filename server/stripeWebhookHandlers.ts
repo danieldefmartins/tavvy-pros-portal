@@ -11,7 +11,14 @@ const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 // Create Supabase admin client for server-side operations
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+// Only initialize if credentials are available
+let supabaseAdmin: ReturnType<typeof createClient> | null = null;
+
+if (supabaseUrl && supabaseServiceKey) {
+  supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+} else {
+  console.warn('SUPABASE_SERVICE_ROLE_KEY not configured - webhook handlers will not work');
+}
 
 /**
  * Handle checkout.session.completed event
@@ -21,6 +28,11 @@ export async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session
 ): Promise<void> {
   console.log('Checkout session completed:', session.id);
+  
+  if (!supabaseAdmin) {
+    console.error('Supabase admin client not initialized');
+    return;
+  }
   
   try {
     const customerEmail = session.customer_email || session.customer_details?.email;
@@ -83,6 +95,11 @@ export async function handleSubscriptionCreated(
 ): Promise<void> {
   console.log('Subscription created:', subscription.id);
   
+  if (!supabaseAdmin) {
+    console.error('Supabase admin client not initialized');
+    return;
+  }
+  
   try {
     const customerId = subscription.customer as string;
     const metadata = subscription.metadata || {};
@@ -133,6 +150,11 @@ export async function handleSubscriptionUpdated(
 ): Promise<void> {
   console.log('Subscription updated:', subscription.id);
   
+  if (!supabaseAdmin) {
+    console.error('Supabase admin client not initialized');
+    return;
+  }
+  
   try {
     const customerId = subscription.customer as string;
     
@@ -177,6 +199,11 @@ export async function handleSubscriptionDeleted(
   subscription: Stripe.Subscription
 ): Promise<void> {
   console.log('Subscription deleted:', subscription.id);
+  
+  if (!supabaseAdmin) {
+    console.error('Supabase admin client not initialized');
+    return;
+  }
   
   try {
     const customerId = subscription.customer as string;
@@ -223,6 +250,11 @@ export async function handlePaymentSucceeded(
   invoice: Stripe.Invoice
 ): Promise<void> {
   console.log('Payment succeeded:', invoice.id);
+  
+  if (!supabaseAdmin) {
+    console.error('Supabase admin client not initialized');
+    return;
+  }
   
   try {
     const customerId = invoice.customer as string;
@@ -273,6 +305,11 @@ export async function handlePaymentFailed(
   invoice: Stripe.Invoice
 ): Promise<void> {
   console.log('Payment failed:', invoice.id);
+  
+  if (!supabaseAdmin) {
+    console.error('Supabase admin client not initialized');
+    return;
+  }
   
   try {
     const customerId = invoice.customer as string;

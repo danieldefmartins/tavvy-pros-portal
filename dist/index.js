@@ -1,6 +1,7 @@
 // server/_core/index.ts
 import "dotenv/config";
 import express2 from "express";
+import cors from "cors";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -629,6 +630,106 @@ async function getRepStats(userId) {
     places_reviewed: parseInt(result[0].places_reviewed, 10)
   };
 }
+async function createTavvyPlace(input, createdBy) {
+  const sql = getSupabaseDb();
+  if (!sql) return null;
+  try {
+    const result = await sql`
+      INSERT INTO tavvy_places (
+        name, description, tavvy_category, tavvy_subcategory,
+        latitude, longitude, address, address_line2,
+        city, region, postcode, country,
+        phone, email, website, instagram, facebook, twitter, tiktok,
+        hours_display, hours_json, price_level,
+        photos, cover_image_url,
+        source, created_by
+      ) VALUES (
+        ${input.name},
+        ${input.description || null},
+        ${input.tavvy_category},
+        ${input.tavvy_subcategory || null},
+        ${input.latitude || null},
+        ${input.longitude || null},
+        ${input.address || null},
+        ${input.address_line2 || null},
+        ${input.city || null},
+        ${input.region || null},
+        ${input.postcode || null},
+        ${input.country || null},
+        ${input.phone || null},
+        ${input.email || null},
+        ${input.website || null},
+        ${input.instagram || null},
+        ${input.facebook || null},
+        ${input.twitter || null},
+        ${input.tiktok || null},
+        ${input.hours_display || null},
+        ${input.hours_json ? JSON.stringify(input.hours_json) : null}::jsonb,
+        ${input.price_level || null},
+        ${input.photos || null},
+        ${input.cover_image_url || null},
+        'pro',
+        ${createdBy}
+      )
+      RETURNING *
+    `;
+    if (result.length > 0) {
+      console.log(`[Supabase] Created new tavvy place: ${result[0].name} (${result[0].id})`);
+      return result[0];
+    }
+    return null;
+  } catch (error) {
+    console.error("[Supabase] Create tavvy place error:", error);
+    return null;
+  }
+}
+async function getTavvyPlacesByCreator(createdBy, limit = 50, offset = 0) {
+  const sql = getSupabaseDb();
+  if (!sql) return [];
+  try {
+    const result = await sql`
+      SELECT * FROM tavvy_places
+      WHERE created_by = ${createdBy}
+        AND is_deleted = false
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    `;
+    return result;
+  } catch (error) {
+    console.error("[Supabase] Get tavvy places by creator error:", error);
+    return [];
+  }
+}
+function getTavvyCategories() {
+  return [
+    { slug: "arts", name: "Arts & Culture" },
+    { slug: "automotive", name: "Automotive" },
+    { slug: "nightlife", name: "Bars & Nightlife" },
+    { slug: "beauty", name: "Beauty & Personal Care" },
+    { slug: "business", name: "Business Services" },
+    { slug: "coffee_tea", name: "Coffee & Tea" },
+    { slug: "education", name: "Education" },
+    { slug: "entertainment", name: "Entertainment" },
+    { slug: "events", name: "Events & Venues" },
+    { slug: "financial", name: "Financial Services" },
+    { slug: "fitness", name: "Fitness & Sports" },
+    { slug: "food", name: "Food & Dining" },
+    { slug: "government", name: "Government" },
+    { slug: "health", name: "Health & Medical" },
+    { slug: "home", name: "Home Services" },
+    { slug: "hotels", name: "Hotels & Lodging" },
+    { slug: "legal", name: "Legal Services" },
+    { slug: "outdoors", name: "Outdoors & Recreation" },
+    { slug: "pets", name: "Pets & Animals" },
+    { slug: "professional", name: "Professional Services" },
+    { slug: "real_estate", name: "Real Estate" },
+    { slug: "religious", name: "Religious Organizations" },
+    { slug: "rv_camping", name: "RV & Camping" },
+    { slug: "shopping", name: "Shopping & Retail" },
+    { slug: "transportation", name: "Transportation" },
+    { slug: "other", name: "Other" }
+  ];
+}
 
 // server/routers.ts
 import { eq as eq2, desc } from "drizzle-orm";
@@ -646,7 +747,7 @@ async function createGHLContact(contactData, apiKey, locationId) {
       body: JSON.stringify({
         ...contactData,
         locationId,
-        source: "TavvY Pros Portal"
+        source: "Tavvy Pros Portal"
       })
     });
     if (!response.ok) {
@@ -774,7 +875,7 @@ async function syncProToGHL(proData, apiKey, locationId) {
     if (updateResult.success) {
       await addGHLContactTags(
         existing.contactId,
-        ["TavvY Pro", "Paid Member", ...proData.services || []],
+        ["Tavvy Pro", "Paid Member", ...proData.services || []],
         apiKey
       );
     }
@@ -795,7 +896,7 @@ async function syncProToGHL(proData, apiKey, locationId) {
       state: proData.state,
       postalCode: proData.zipCode,
       website: proData.website,
-      tags: ["TavvY Pro", "New Signup", ...proData.services || []],
+      tags: ["Tavvy Pro", "New Signup", ...proData.services || []],
       customField: proData.yearsExperience ? { years_experience: String(proData.yearsExperience) } : void 0
     },
     apiKey,
@@ -836,6 +937,208 @@ async function verifySupabaseToken(token) {
   }
   return user;
 }
+
+// server/stripe.ts
+import Stripe from "stripe";
+var stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2026-01-28.clover"
+});
+async function createCheckoutSession(params) {
+  const {
+    priceId,
+    plan,
+    interval,
+    couponId,
+    customerEmail,
+    userId,
+    portalType = "pros",
+    successUrl,
+    cancelUrl
+  } = params;
+  try {
+    const sessionParams = {
+      mode: "subscription",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1
+        }
+      ],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      allow_promotion_codes: true,
+      // Allow users to enter promo codes
+      billing_address_collection: "required",
+      customer_email: customerEmail,
+      metadata: {
+        userId: userId || "",
+        plan,
+        interval,
+        portal_type: portalType
+      },
+      subscription_data: {
+        metadata: {
+          userId: userId || "",
+          plan,
+          interval,
+          portal_type: portalType
+        }
+      }
+    };
+    if (couponId) {
+      sessionParams.discounts = [{ coupon: couponId }];
+    }
+    const session = await stripe.checkout.sessions.create(sessionParams);
+    return session;
+  } catch (error) {
+    console.error("Error creating checkout session:", error);
+    throw error;
+  }
+}
+async function createCustomerPortalSession(customerId, returnUrl) {
+  try {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: returnUrl
+    });
+    return session;
+  } catch (error) {
+    console.error("Error creating customer portal session:", error);
+    throw error;
+  }
+}
+async function getSubscription(subscriptionId) {
+  try {
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    return subscription;
+  } catch (error) {
+    console.error("Error fetching subscription:", error);
+    return null;
+  }
+}
+function verifyWebhookSignature(payload, signature, webhookSecret) {
+  try {
+    const event = stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      webhookSecret
+    );
+    return event;
+  } catch (error) {
+    console.error("Error verifying webhook signature:", error);
+    throw error;
+  }
+}
+
+// shared/stripe-config.ts
+var STRIPE_CONFIG = {
+  // Stripe API Key (set in environment variables)
+  secretKey: process.env.STRIPE_SECRET_KEY || "",
+  // Products
+  products: {
+    pro: {
+      id: "prod_TkvJ6rkl8ICp97",
+      name: "Tavvy Pro Membership",
+      prices: {
+        monthly: {
+          id: "price_1StuJjIeV9jtGwIXHlQNkJav",
+          amount: 5999,
+          // $59.99
+          interval: "month",
+          displayPrice: "$59.99/month"
+        },
+        annual: {
+          id: "price_1StuJAIeV9jtGwIXS4bDWgDT",
+          amount: 59900,
+          // $599.00
+          interval: "year",
+          displayPrice: "$599/year"
+        }
+      },
+      coupons: {
+        monthly: {
+          id: "HCArOJ6D",
+          name: "$10 Off",
+          discount: 1e3,
+          // $10.00
+          duration: "12 months",
+          finalPrice: "$49.99/month"
+        },
+        annual: {
+          id: "wzF33SQA",
+          name: "$400 Off",
+          discount: 4e4,
+          // $400.00
+          duration: "once",
+          finalPrice: "$199/year"
+        }
+      },
+      features: [
+        "Unlimited project requests",
+        "Verified contractor matching",
+        "Real activity signals",
+        "Direct messaging",
+        "Project management tools",
+        "Payment protection",
+        "Priority support"
+      ]
+    },
+    proPlus: {
+      id: "prod_TkvJ6rkl8ICp97",
+      // Same product, different tier
+      name: "Tavvy Pro+ Membership",
+      prices: {
+        monthly: {
+          id: "price_1StuBAIeV9jtGwIXnp3T4PLJ",
+          amount: 11999,
+          // $119.99
+          interval: "month",
+          displayPrice: "$119.99/month"
+        },
+        annual: {
+          id: "price_1Stu9bIeV9jtGwIXWSN6axQf",
+          amount: 139900,
+          // $1,399.00
+          interval: "year",
+          displayPrice: "$1,399/year"
+        }
+      },
+      coupons: {
+        monthly: {
+          id: "N831RGNp",
+          name: "$50 Off",
+          discount: 5e3,
+          // $50.00
+          duration: "12 months",
+          finalPrice: "$69.99/month"
+        },
+        annual: {
+          id: "Ef0h5xy1",
+          name: "$800 Off",
+          discount: 8e4,
+          // $800.00
+          duration: "once",
+          finalPrice: "$599/year"
+        }
+      },
+      features: [
+        "Everything in Pro",
+        "Advanced analytics",
+        "Custom branding",
+        "API access",
+        "Dedicated account manager",
+        "White-label options",
+        "Premium support (24/7)"
+      ]
+    }
+  },
+  // Success/Cancel URLs
+  urls: {
+    success: "/subscription/success?session_id={CHECKOUT_SESSION_ID}",
+    cancel: "/subscription/cancel"
+  }
+};
 
 // server/routers.ts
 var AUTH_COOKIE_NAME = "tavvy_auth_token";
@@ -917,6 +1220,78 @@ var appRouter = router({
     }),
     getSignals: protectedProcedure.input(z.object({ placeId: z.string() })).query(async ({ input }) => {
       return getPlaceSignalAggregates(input.placeId);
+    }),
+    // ============ TAVVY PLACES (Pro-Created) ============
+    // Get tavvy categories for dropdown
+    getTavvyCategories: protectedProcedure.query(() => {
+      return getTavvyCategories();
+    }),
+    // Create a new tavvy place
+    create: protectedProcedure.input(
+      z.object({
+        name: z.string().min(1, "Name is required").max(200),
+        description: z.string().max(2e3).optional(),
+        tavvy_category: z.string().min(1, "Category is required"),
+        tavvy_subcategory: z.string().optional(),
+        latitude: z.number().min(-90).max(90).optional(),
+        longitude: z.number().min(-180).max(180).optional(),
+        address: z.string().max(500).optional(),
+        address_line2: z.string().max(200).optional(),
+        city: z.string().max(100).optional(),
+        region: z.string().max(100).optional(),
+        postcode: z.string().max(20).optional(),
+        country: z.string().max(100).optional(),
+        phone: z.string().max(50).optional(),
+        email: z.string().email().optional().or(z.literal("")),
+        website: z.string().url().optional().or(z.literal("")),
+        instagram: z.string().max(100).optional(),
+        facebook: z.string().max(200).optional(),
+        twitter: z.string().max(100).optional(),
+        tiktok: z.string().max(100).optional(),
+        hours_display: z.string().max(500).optional(),
+        price_level: z.number().min(1).max(4).optional(),
+        cover_image_url: z.string().url().optional().or(z.literal(""))
+      })
+    ).mutation(async ({ ctx, input }) => {
+      const userId = ctx.user?.id;
+      if (!userId) {
+        throw new TRPCError2({
+          code: "UNAUTHORIZED",
+          message: "You must be logged in to create a place"
+        });
+      }
+      const cleanInput = {
+        ...input,
+        email: input.email || null,
+        website: input.website || null,
+        cover_image_url: input.cover_image_url || null
+      };
+      const place = await createTavvyPlace(cleanInput, userId);
+      if (!place) {
+        throw new TRPCError2({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create place"
+        });
+      }
+      return place;
+    }),
+    // Get places created by the current pro
+    getMyPlaces: protectedProcedure.input(
+      z.object({
+        limit: z.number().min(1).max(100).default(50),
+        offset: z.number().min(0).default(0)
+      }).optional()
+    ).query(async ({ ctx, input }) => {
+      const userId = ctx.user?.id;
+      if (!userId) {
+        throw new TRPCError2({
+          code: "UNAUTHORIZED",
+          message: "You must be logged in to view your places"
+        });
+      }
+      const limit = input?.limit || 50;
+      const offset = input?.offset || 0;
+      return getTavvyPlacesByCreator(userId, limit, offset);
     })
   }),
   // Signals router - get signal definitions
@@ -1059,6 +1434,57 @@ var appRouter = router({
       const oderId = ctx.user?.id || "anonymous";
       return db.select().from(batchImportJobs).where(eq2(batchImportJobs.oderId, oderId)).orderBy(desc(batchImportJobs.createdAt)).limit(20);
     })
+  }),
+  // Stripe subscription router
+  stripe: router({
+    createCheckout: publicProcedure.input(
+      z.object({
+        plan: z.enum(["pro", "proPlus"]),
+        interval: z.enum(["monthly", "annual"]),
+        couponId: z.string().optional(),
+        email: z.string().email().optional()
+      })
+    ).mutation(async ({ input, ctx }) => {
+      const { plan, interval, couponId, email } = input;
+      const priceId = STRIPE_CONFIG.products[plan].prices[interval].id;
+      const customerEmail = email || ctx.user?.email;
+      const session = await createCheckoutSession({
+        priceId,
+        plan,
+        interval,
+        couponId,
+        customerEmail,
+        userId: ctx.user?.id,
+        portalType: "pros",
+        successUrl: `${process.env.PUBLIC_URL || "http://localhost:5000"}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${process.env.PUBLIC_URL || "http://localhost:5000"}/subscription/cancel`
+      });
+      return {
+        sessionId: session.id,
+        url: session.url
+      };
+    }),
+    createPortal: protectedProcedure.input(
+      z.object({
+        customerId: z.string()
+      })
+    ).mutation(async ({ input, ctx }) => {
+      const session = await createCustomerPortalSession(
+        input.customerId,
+        `${process.env.PUBLIC_URL || "http://localhost:5000"}/subscription`
+      );
+      return {
+        url: session.url
+      };
+    }),
+    getSubscription: protectedProcedure.input(
+      z.object({
+        subscriptionId: z.string()
+      })
+    ).query(async ({ input }) => {
+      const subscription = await getSubscription(input.subscriptionId);
+      return subscription;
+    })
   })
 });
 
@@ -1066,8 +1492,31 @@ var appRouter = router({
 async function createContext(opts) {
   let user = null;
   try {
-    user = await sdk.authenticateRequest(opts.req);
+    const authHeader = opts.req.headers.authorization;
+    const accessToken = authHeader?.replace("Bearer ", "");
+    if (accessToken) {
+      const { data: { user: supabaseUser }, error } = await supabaseAdmin.auth.getUser(accessToken);
+      if (!error && supabaseUser) {
+        user = await getUserByOpenId(supabaseUser.id);
+        if (!user) {
+          await upsertUser({
+            openId: supabaseUser.id,
+            name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split("@")[0] || null,
+            email: supabaseUser.email ?? null,
+            loginMethod: "supabase",
+            lastSignedIn: /* @__PURE__ */ new Date()
+          });
+          user = await getUserByOpenId(supabaseUser.id);
+        } else {
+          await upsertUser({
+            openId: user.openId,
+            lastSignedIn: /* @__PURE__ */ new Date()
+          });
+        }
+      }
+    }
   } catch (error) {
+    console.error("[Auth] Error authenticating request:", error);
     user = null;
   }
   return {
@@ -1175,7 +1624,425 @@ function serveStatic(app) {
   });
 }
 
+// server/_core/securityHeaders.ts
+var defaultConfig = {
+  enableCSP: true,
+  cspDirectives: {
+    "default-src": ["'self'"],
+    "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+    // Required for React dev
+    "style-src": ["'self'", "'unsafe-inline'"],
+    "img-src": ["'self'", "data:", "https:", "blob:"],
+    "font-src": ["'self'", "data:"],
+    "connect-src": ["'self'", "https://*.supabase.co", "wss://*.supabase.co"],
+    "frame-ancestors": ["'none'"],
+    "form-action": ["'self'"],
+    "base-uri": ["'self'"]
+  },
+  enableHSTS: true,
+  hstsMaxAge: 31536e3,
+  // 1 year
+  hstsIncludeSubDomains: true,
+  hstsPreload: false,
+  enableXFrameOptions: true,
+  xFrameOptions: "DENY",
+  enableXContentTypeOptions: true,
+  enableXXSSProtection: true,
+  enableReferrerPolicy: true,
+  referrerPolicy: "strict-origin-when-cross-origin"
+};
+function buildCSPHeader(directives) {
+  return Object.entries(directives).map(([key, values]) => `${key} ${values.join(" ")}`).join("; ");
+}
+function buildHSTSHeader(config) {
+  let value = `max-age=${config.hstsMaxAge}`;
+  if (config.hstsIncludeSubDomains) {
+    value += "; includeSubDomains";
+  }
+  if (config.hstsPreload) {
+    value += "; preload";
+  }
+  return value;
+}
+function securityHeaders(customConfig) {
+  const config = { ...defaultConfig, ...customConfig };
+  return (req, res, next) => {
+    if (config.enableCSP && config.cspDirectives) {
+      const cspHeader = buildCSPHeader(config.cspDirectives);
+      res.setHeader("Content-Security-Policy", cspHeader);
+    }
+    if (config.enableHSTS && process.env.NODE_ENV === "production") {
+      res.setHeader("Strict-Transport-Security", buildHSTSHeader(config));
+    }
+    if (config.enableXFrameOptions) {
+      res.setHeader("X-Frame-Options", config.xFrameOptions || "DENY");
+    }
+    if (config.enableXContentTypeOptions) {
+      res.setHeader("X-Content-Type-Options", "nosniff");
+    }
+    if (config.enableXXSSProtection) {
+      res.setHeader("X-XSS-Protection", "1; mode=block");
+    }
+    if (config.enableReferrerPolicy) {
+      res.setHeader("Referrer-Policy", config.referrerPolicy || "strict-origin-when-cross-origin");
+    }
+    res.setHeader(
+      "Permissions-Policy",
+      "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+    );
+    res.removeHeader("X-Powered-By");
+    next();
+  };
+}
+var adminPortalSecurityHeaders = securityHeaders({
+  enableCSP: true,
+  cspDirectives: {
+    "default-src": ["'self'"],
+    "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+    "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+    "img-src": ["'self'", "data:", "https:", "blob:"],
+    "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
+    "connect-src": [
+      "'self'",
+      "https://*.supabase.co",
+      "wss://*.supabase.co",
+      "https://api.stripe.com"
+    ],
+    "frame-ancestors": ["'none'"],
+    "form-action": ["'self'"],
+    "base-uri": ["'self'"]
+  },
+  xFrameOptions: "DENY"
+});
+
+// server/stripeWebhookHandlers.ts
+import { createClient as createClient2 } from "@supabase/supabase-js";
+var supabaseUrl2 = process.env.SUPABASE_URL || "";
+var supabaseServiceKey2 = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+var supabaseAdmin2 = null;
+if (supabaseUrl2 && supabaseServiceKey2) {
+  supabaseAdmin2 = createClient2(supabaseUrl2, supabaseServiceKey2);
+} else {
+  console.warn("SUPABASE_SERVICE_ROLE_KEY not configured - webhook handlers will not work");
+}
+async function handleCheckoutSessionCompleted(session) {
+  console.log("Checkout session completed:", session.id);
+  if (!supabaseAdmin2) {
+    console.error("Supabase admin client not initialized");
+    return;
+  }
+  try {
+    const customerEmail = session.customer_email || session.customer_details?.email;
+    const metadata = session.metadata || {};
+    const plan = metadata.plan || "pro";
+    const interval = metadata.interval || "monthly";
+    const portalType = metadata.portal_type || "pros";
+    if (!customerEmail) {
+      console.error("No customer email found in checkout session");
+      return;
+    }
+    const { data: authUsers, error: authError } = await supabaseAdmin2.auth.admin.listUsers();
+    if (authError) {
+      console.error("Error fetching auth users:", authError);
+      return;
+    }
+    const user = authUsers.users.find((u) => u.email === customerEmail);
+    if (!user) {
+      console.error(`No user found with email: ${customerEmail}`);
+      return;
+    }
+    const { error: updateError } = await supabaseAdmin2.from("profiles").update({
+      subscription_status: "active",
+      subscription_plan: plan,
+      portal_type: portalType,
+      is_pro: true,
+      stripe_customer_id: session.customer,
+      subscription_expires_at: null,
+      // Will be set by subscription webhook
+      pro_since: (/* @__PURE__ */ new Date()).toISOString(),
+      updated_at: (/* @__PURE__ */ new Date()).toISOString()
+    }).eq("user_id", user.id);
+    if (updateError) {
+      console.error("Error updating user profile:", updateError);
+      return;
+    }
+    console.log(`Successfully activated subscription for user ${user.id} (${customerEmail}) - Portal: ${portalType}`);
+  } catch (error) {
+    console.error("Error in handleCheckoutSessionCompleted:", error);
+  }
+}
+async function handleSubscriptionCreated2(subscription) {
+  console.log("Subscription created:", subscription.id);
+  if (!supabaseAdmin2) {
+    console.error("Supabase admin client not initialized");
+    return;
+  }
+  try {
+    const customerId = subscription.customer;
+    const metadata = subscription.metadata || {};
+    const plan = metadata.plan || "pro";
+    const portalType = metadata.portal_type || "pros";
+    const { data: profiles, error: profileError } = await supabaseAdmin2.from("profiles").select("user_id").eq("stripe_customer_id", customerId).single();
+    if (profileError || !profiles) {
+      console.error("No profile found for customer:", customerId);
+      return;
+    }
+    const { error: updateError } = await supabaseAdmin2.from("profiles").update({
+      subscription_status: subscription.status,
+      subscription_plan: plan,
+      portal_type: portalType,
+      is_pro: true,
+      subscription_expires_at: subscription.current_period_end ? new Date(subscription.current_period_end * 1e3).toISOString() : null,
+      updated_at: (/* @__PURE__ */ new Date()).toISOString()
+    }).eq("user_id", profiles.user_id);
+    if (updateError) {
+      console.error("Error updating subscription:", updateError);
+      return;
+    }
+    console.log(`Subscription created for user ${profiles.user_id} - Portal: ${portalType}`);
+  } catch (error) {
+    console.error("Error in handleSubscriptionCreated:", error);
+  }
+}
+async function handleSubscriptionUpdated2(subscription) {
+  console.log("Subscription updated:", subscription.id);
+  if (!supabaseAdmin2) {
+    console.error("Supabase admin client not initialized");
+    return;
+  }
+  try {
+    const customerId = subscription.customer;
+    const { data: profiles, error: profileError } = await supabaseAdmin2.from("profiles").select("user_id").eq("stripe_customer_id", customerId).single();
+    if (profileError || !profiles) {
+      console.error("No profile found for customer:", customerId);
+      return;
+    }
+    const { error: updateError } = await supabaseAdmin2.from("profiles").update({
+      subscription_status: subscription.status,
+      subscription_expires_at: subscription.current_period_end ? new Date(subscription.current_period_end * 1e3).toISOString() : null,
+      is_pro: subscription.status === "active" || subscription.status === "trialing",
+      updated_at: (/* @__PURE__ */ new Date()).toISOString()
+    }).eq("user_id", profiles.user_id);
+    if (updateError) {
+      console.error("Error updating subscription status:", updateError);
+      return;
+    }
+    console.log(`Subscription updated for user ${profiles.user_id}: ${subscription.status}`);
+  } catch (error) {
+    console.error("Error in handleSubscriptionUpdated:", error);
+  }
+}
+async function handleSubscriptionDeleted2(subscription) {
+  console.log("Subscription deleted:", subscription.id);
+  if (!supabaseAdmin2) {
+    console.error("Supabase admin client not initialized");
+    return;
+  }
+  try {
+    const customerId = subscription.customer;
+    const { data: profiles, error: profileError } = await supabaseAdmin2.from("profiles").select("user_id").eq("stripe_customer_id", customerId).single();
+    if (profileError || !profiles) {
+      console.error("No profile found for customer:", customerId);
+      return;
+    }
+    const { error: updateError } = await supabaseAdmin2.from("profiles").update({
+      subscription_status: "canceled",
+      is_pro: false,
+      portal_type: "free",
+      // Revert to free
+      subscription_expires_at: subscription.current_period_end ? new Date(subscription.current_period_end * 1e3).toISOString() : null,
+      updated_at: (/* @__PURE__ */ new Date()).toISOString()
+    }).eq("user_id", profiles.user_id);
+    if (updateError) {
+      console.error("Error revoking subscription:", updateError);
+      return;
+    }
+    console.log(`Subscription canceled for user ${profiles.user_id}`);
+  } catch (error) {
+    console.error("Error in handleSubscriptionDeleted:", error);
+  }
+}
+async function handlePaymentSucceeded2(invoice) {
+  console.log("Payment succeeded:", invoice.id);
+  if (!supabaseAdmin2) {
+    console.error("Supabase admin client not initialized");
+    return;
+  }
+  try {
+    const customerId = invoice.customer;
+    const subscriptionId = typeof invoice.subscription === "string" ? invoice.subscription : null;
+    if (!subscriptionId) {
+      console.log("No subscription associated with invoice");
+      return;
+    }
+    const { data: profiles, error: profileError } = await supabaseAdmin2.from("profiles").select("user_id").eq("stripe_customer_id", customerId).single();
+    if (profileError || !profiles) {
+      console.error("No profile found for customer:", customerId);
+      return;
+    }
+    const { error: updateError } = await supabaseAdmin2.from("profiles").update({
+      subscription_status: "active",
+      is_pro: true,
+      updated_at: (/* @__PURE__ */ new Date()).toISOString()
+    }).eq("user_id", profiles.user_id);
+    if (updateError) {
+      console.error("Error updating payment status:", updateError);
+      return;
+    }
+    console.log(`Payment processed for user ${profiles.user_id}`);
+  } catch (error) {
+    console.error("Error in handlePaymentSucceeded:", error);
+  }
+}
+async function handlePaymentFailed2(invoice) {
+  console.log("Payment failed:", invoice.id);
+  if (!supabaseAdmin2) {
+    console.error("Supabase admin client not initialized");
+    return;
+  }
+  try {
+    const customerId = invoice.customer;
+    const { data: profiles, error: profileError } = await supabaseAdmin2.from("profiles").select("user_id").eq("stripe_customer_id", customerId).single();
+    if (profileError || !profiles) {
+      console.error("No profile found for customer:", customerId);
+      return;
+    }
+    const { error: updateError } = await supabaseAdmin2.from("profiles").update({
+      subscription_status: "past_due",
+      updated_at: (/* @__PURE__ */ new Date()).toISOString()
+    }).eq("user_id", profiles.user_id);
+    if (updateError) {
+      console.error("Error updating payment failed status:", updateError);
+      return;
+    }
+    console.log(`Payment failed for user ${profiles.user_id}`);
+  } catch (error) {
+    console.error("Error in handlePaymentFailed:", error);
+  }
+}
+
+// server/webhookHandler.ts
+async function handleStripeWebhook(req, res) {
+  const signature = req.headers["stripe-signature"];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!signature || !webhookSecret) {
+    console.error("Missing Stripe signature or webhook secret");
+    return res.status(400).send("Webhook Error: Missing signature or secret");
+  }
+  let event;
+  try {
+    event = verifyWebhookSignature(
+      req.body,
+      signature,
+      webhookSecret
+    );
+  } catch (err) {
+    console.error("Webhook signature verification failed:", err);
+    return res.status(400).send(`Webhook Error: ${err instanceof Error ? err.message : "Unknown error"}`);
+  }
+  console.log(`Received webhook event: ${event.type}`);
+  try {
+    switch (event.type) {
+      case "checkout.session.completed":
+        await handleCheckoutSessionCompleted(event.data.object);
+        break;
+      case "customer.subscription.created":
+        await handleSubscriptionCreated2(event.data.object);
+        break;
+      case "customer.subscription.updated":
+        await handleSubscriptionUpdated2(event.data.object);
+        break;
+      case "customer.subscription.deleted":
+        await handleSubscriptionDeleted2(event.data.object);
+        break;
+      case "invoice.payment_succeeded":
+        await handlePaymentSucceeded2(event.data.object);
+        break;
+      case "invoice.payment_failed":
+        await handlePaymentFailed2(event.data.object);
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+    }
+    res.json({ received: true });
+  } catch (error) {
+    console.error("Error handling webhook:", error);
+    res.status(500).send("Webhook handler failed");
+  }
+}
+
 // server/_core/index.ts
+function getAllowedOrigins() {
+  const envOrigins = process.env.CORS_ALLOWED_ORIGINS || "";
+  const origins = envOrigins.split(",").map((o) => o.trim()).filter((o) => o.length > 0);
+  if (process.env.NODE_ENV !== "production") {
+    origins.push("http://localhost:3000");
+    origins.push("http://localhost:5173");
+    origins.push("http://127.0.0.1:3000");
+    origins.push("http://127.0.0.1:5173");
+  }
+  console.log("[CORS] Allowed origins:", origins);
+  return origins;
+}
+var ALLOWED_ORIGINS = getAllowedOrigins();
+var rateLimitStore = /* @__PURE__ */ new Map();
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of rateLimitStore.entries()) {
+    if (entry.resetTime < now) {
+      rateLimitStore.delete(key);
+    }
+  }
+}, 5 * 60 * 1e3);
+function createRateLimiter(config) {
+  return (req, res, next) => {
+    const clientIp = req.ip || req.headers["x-forwarded-for"]?.toString().split(",")[0] || req.socket.remoteAddress || "unknown";
+    const key = `${clientIp}:${req.path}`;
+    const now = Date.now();
+    let entry = rateLimitStore.get(key);
+    if (!entry || entry.resetTime < now) {
+      entry = {
+        count: 1,
+        resetTime: now + config.windowMs
+      };
+      rateLimitStore.set(key, entry);
+    } else {
+      entry.count++;
+    }
+    res.setHeader("X-RateLimit-Limit", config.maxRequests);
+    res.setHeader("X-RateLimit-Remaining", Math.max(0, config.maxRequests - entry.count));
+    res.setHeader("X-RateLimit-Reset", Math.ceil(entry.resetTime / 1e3));
+    if (entry.count > config.maxRequests) {
+      console.warn(`[RateLimit] Exceeded for ${clientIp} on ${req.path}`);
+      return res.status(429).json({
+        error: config.message || "Too many requests, please try again later.",
+        retryAfter: Math.ceil((entry.resetTime - now) / 1e3)
+      });
+    }
+    next();
+  };
+}
+var authRateLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1e3,
+  // 15 minutes
+  maxRequests: 10,
+  // 10 login attempts per 15 minutes
+  message: "Too many login attempts. Please try again in 15 minutes."
+});
+var apiRateLimiter = createRateLimiter({
+  windowMs: 60 * 1e3,
+  // 1 minute
+  maxRequests: 100,
+  // 100 requests per minute
+  message: "API rate limit exceeded. Please slow down."
+});
+var strictRateLimiter = createRateLimiter({
+  windowMs: 60 * 1e3,
+  // 1 minute
+  maxRequests: 30,
+  // 30 requests per minute for sensitive operations
+  message: "Rate limit exceeded for this operation."
+});
 function isPortAvailable(port) {
   return new Promise((resolve) => {
     const server = net.createServer();
@@ -1196,8 +2063,54 @@ async function findAvailablePort(startPort = 3e3) {
 async function startServer() {
   const app = express2();
   const server = createServer(app);
+  app.set("trust proxy", 1);
+  app.use(cors({
+    origin: function(origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+      if (ALLOWED_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
+      console.warn(`[CORS] Rejected request from origin: ${origin}`);
+      return callback(new Error("CORS not allowed"), false);
+    },
+    credentials: true
+  }));
   app.use(express2.json({ limit: "50mb" }));
   app.use(express2.urlencoded({ limit: "50mb", extended: true }));
+  app.use(securityHeaders({
+    cspDirectives: {
+      "default-src": ["'self'"],
+      "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      "img-src": ["'self'", "data:", "https:", "blob:"],
+      "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
+      "connect-src": [
+        "'self'",
+        "https://*.supabase.co",
+        "wss://*.supabase.co",
+        "https://api.stripe.com",
+        "https://js.stripe.com"
+      ],
+      "frame-src": ["https://js.stripe.com", "https://hooks.stripe.com"],
+      "frame-ancestors": ["'self'"],
+      "form-action": ["'self'"],
+      "base-uri": ["'self'"]
+    },
+    xFrameOptions: "SAMEORIGIN"
+    // Allow Stripe iframes
+  }));
+  app.use("/api/trpc/auth.login", authRateLimiter);
+  app.use("/api/trpc/auth.register", authRateLimiter);
+  app.use("/api/trpc/stripe", strictRateLimiter);
+  app.use("/api/trpc/subscription", strictRateLimiter);
+  app.use("/api/trpc", apiRateLimiter);
+  app.post(
+    "/api/webhooks/stripe",
+    express2.raw({ type: "application/json" }),
+    handleStripeWebhook
+  );
   registerOAuthRoutes(app);
   app.use(
     "/api/trpc",
