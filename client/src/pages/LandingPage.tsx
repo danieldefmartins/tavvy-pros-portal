@@ -342,17 +342,29 @@ export default function LandingPage() {
       </section>
 
       {/* 65M Places Banner */}
-      <section className="py-12 px-4" style={{ background: `linear-gradient(90deg, ${COLORS.teal}, ${COLORS.blue})` }}>
-        <div className="container mx-auto max-w-4xl text-center">
-          <div className="text-6xl md:text-7xl font-black text-white mb-4" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
-            65 Million+
+      <section className="py-16 px-4" style={{ background: `linear-gradient(90deg, ${COLORS.teal}, ${COLORS.blue})` }}>
+        <div className="container mx-auto max-w-5xl text-center">
+          <div className="text-5xl md:text-7xl font-black uppercase mb-6" style={{ color: COLORS.gold, textShadow: '0 2px 20px rgba(0,0,0,0.5)', letterSpacing: '0.02em' }}>
+            DON'T GET LEFT OUT
           </div>
-          <div className="text-2xl md:text-3xl font-semibold text-white mb-6">
-            Places Worldwide Already in Our Database
+          <div className="text-3xl md:text-4xl font-bold text-white mb-4">
+            65 Million+ Places Already in Our Database
           </div>
-          <div className="text-xl md:text-2xl font-bold uppercase tracking-wider" style={{ color: COLORS.gold }}>
-            Don't Get Left Out. Join Now.
+          <div className="text-xl md:text-2xl text-white/90 mb-8">
+            Join thousands of professionals worldwide
           </div>
+          <button
+            onClick={() => handleGetStarted('pro', 'yearly')}
+            className="px-12 py-5 text-2xl md:text-3xl font-black uppercase rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-200"
+            style={{
+              background: `linear-gradient(135deg, ${COLORS.gold}, ${COLORS.yellow})`,
+              color: '#000',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            JOIN NOW →
+          </button>
         </div>
       </section>
 
