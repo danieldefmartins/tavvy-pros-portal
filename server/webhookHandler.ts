@@ -30,7 +30,7 @@ import {
  * - invoice.payment_failed
  */
 export async function handleStripeWebhook(req: Request, res: Response) {
-  const signature = req.headers['stripe-signature'];
+  const signature = req.headers['stripe-signature'] as string;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!signature || !webhookSecret) {

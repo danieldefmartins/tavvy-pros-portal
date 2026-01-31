@@ -109,7 +109,7 @@ export async function handleSubscriptionCreated(
         subscription_plan: plan,
         portal_type: portalType,
         is_pro: true,
-        subscription_expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+        subscription_expires_at: (subscription as any).current_period_end ? new Date((subscription as any).current_period_end * 1000).toISOString() : null,
         updated_at: new Date().toISOString(),
       })
       .eq('user_id', profiles.user_id);
@@ -153,7 +153,7 @@ export async function handleSubscriptionUpdated(
       .from('profiles')
       .update({
         subscription_status: subscription.status,
-        subscription_expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+        subscription_expires_at: (subscription as any).current_period_end ? new Date((subscription as any).current_period_end * 1000).toISOString() : null,
         is_pro: subscription.status === 'active' || subscription.status === 'trialing',
         updated_at: new Date().toISOString(),
       })
@@ -200,7 +200,7 @@ export async function handleSubscriptionDeleted(
         subscription_status: 'canceled',
         is_pro: false,
         portal_type: 'free', // Revert to free
-        subscription_expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
+        subscription_expires_at: (subscription as any).current_period_end ? new Date((subscription as any).current_period_end * 1000).toISOString() : null,
         updated_at: new Date().toISOString(),
       })
       .eq('user_id', profiles.user_id);
@@ -226,7 +226,7 @@ export async function handlePaymentSucceeded(
   
   try {
     const customerId = invoice.customer as string;
-    const subscriptionId = invoice.subscription as string;
+    const subscriptionId = typeof (invoice as any).subscription === 'string' ? (invoice as any).subscription : null;
     
     if (!subscriptionId) {
       console.log('No subscription associated with invoice');
