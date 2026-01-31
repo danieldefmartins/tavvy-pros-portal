@@ -211,11 +211,11 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-1">
             <img 
-              src="/tavvy-logo-2.png" 
-              alt="Tavvy" 
+              src="/tavvy-logo-horizontal.jpg" 
+              alt="Tavvy Pros" 
               className="h-9 w-auto"
             />
-            <span style={{ color: COLORS.gold }} className="font-semibold text-lg">Pros</span>
+            <span style={{ color: COLORS.gold }} className="font-semibold text-lg ml-2">Pros</span>
           </div>
           <div className="flex gap-3">
             <Button
@@ -911,7 +911,7 @@ export default function LandingPage() {
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <img src="/tavvy-logo-2.png" alt="Tavvy" className="h-6 w-auto" />
+              <img src="/tavvy-logo-horizontal.jpg" alt="Tavvy" className="h-6 w-auto" />
               <span style={{ color: COLORS.gold }} className="font-semibold">Pros</span>
             </div>
             <p className="text-sm" style={{ color: COLORS.textDim }}>© 2026 Tavvy. All rights reserved.</p>
