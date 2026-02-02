@@ -46,17 +46,37 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+/**
+ * PublicRoute - Handles redirection for authenticated users
+ * 
+ * Key behavior:
+ * - If user is authenticated AND has NOT completed onboarding → redirect to /onboarding
+ * - If user is authenticated AND HAS completed onboarding → redirect to /dashboard
+ * - If user is not authenticated → show the public content
+ */
 function PublicRoute({ children, redirectToDashboard = true }: { children: React.ReactNode; redirectToDashboard?: boolean }) {
-  const { isAuthenticated, loading } = useSupabaseAuth();
+  const { isAuthenticated, loading, onboardingStatus, onboardingLoading } = useSupabaseAuth();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    if (!loading && isAuthenticated && redirectToDashboard) {
-      setLocation("/dashboard");
+    if (!loading && !onboardingLoading && isAuthenticated && redirectToDashboard) {
+      // Check onboarding status to determine where to redirect
+      if (onboardingStatus) {
+        if (onboardingStatus.onboardingCompleted) {
+          // User has completed onboarding - go to dashboard
+          setLocation("/dashboard");
+        } else {
+          // User has NOT completed onboarding - go to onboarding
+          setLocation("/onboarding");
+        }
+      } else {
+        // No onboarding status yet - default to onboarding for new users
+        setLocation("/onboarding");
+      }
     }
-  }, [loading, isAuthenticated, setLocation, redirectToDashboard]);
+  }, [loading, onboardingLoading, isAuthenticated, onboardingStatus, setLocation, redirectToDashboard]);
 
-  if (loading) {
+  if (loading || (isAuthenticated && onboardingLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f9f7f2]">
         <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
@@ -65,6 +85,46 @@ function PublicRoute({ children, redirectToDashboard = true }: { children: React
   }
 
   if (isAuthenticated && redirectToDashboard) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
+
+/**
+ * DashboardRoute - Protected route that also checks onboarding completion
+ * 
+ * If user hasn't completed onboarding, redirect them to /onboarding first
+ */
+function DashboardRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, loading, onboardingStatus, onboardingLoading } = useSupabaseAuth();
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      setLocation("/login");
+    } else if (!loading && !onboardingLoading && isAuthenticated && onboardingStatus) {
+      // If user hasn't completed onboarding, redirect to onboarding
+      if (!onboardingStatus.onboardingCompleted) {
+        setLocation("/onboarding");
+      }
+    }
+  }, [loading, onboardingLoading, isAuthenticated, onboardingStatus, setLocation]);
+
+  if (loading || onboardingLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f9f7f2]">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  // If onboarding not completed, don't render dashboard content
+  if (onboardingStatus && !onboardingStatus.onboardingCompleted) {
     return null;
   }
 
@@ -98,31 +158,33 @@ function Router() {
         </PublicRoute>
       </Route>
       
-      {/* Protected Routes */}
+      {/* Onboarding - Protected but accessible before dashboard */}
       <Route path="/onboarding">
         <ProtectedRoute>
           <Onboarding />
         </ProtectedRoute>
       </Route>
+      
+      {/* Dashboard Routes - Require completed onboarding */}
       <Route path="/dashboard">
-        <ProtectedRoute>
+        <DashboardRoute>
           <ProsDashboard />
-        </ProtectedRoute>
+        </DashboardRoute>
       </Route>
       <Route path="/messages">
-        <ProtectedRoute>
+        <DashboardRoute>
           <MessagesPage />
-        </ProtectedRoute>
+        </DashboardRoute>
       </Route>
       <Route path="/digital-card">
-        <ProtectedRoute>
+        <DashboardRoute>
           <DigitalCardEditor />
-        </ProtectedRoute>
+        </DashboardRoute>
       </Route>
       <Route path="/add-location">
-        <ProtectedRoute>
+        <DashboardRoute>
           <AddServiceLocation />
-        </ProtectedRoute>
+        </DashboardRoute>
       </Route>
       
       {/* Public Pro Card - No auth required */}
