@@ -9,7 +9,7 @@ import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
-import Onboarding from "./pages/OnboardingNew";
+import Onboarding from "./pages/Onboarding";
 import ProsDashboard from "./pages/ProsDashboard";
 import DigitalCardEditor from "./pages/DigitalCardEditor";
 import PublicProCard from "./pages/PublicProCard";
